@@ -5,7 +5,7 @@ const rawVersion = process.argv[2] || "v0.0.0";
 const cleanVersion = rawVersion.replace(/^v/, "");
 
 const NPM_DIR = path.join(__dirname, "../npm");
-const TREK_CLI_PKG_PATH = path.join(__dirname, "../npm/trek-cli/package.json");
+const TREK_CLI_PKG_PATH = path.join(NPM_DIR, "trek-cli/package.json");
 
 const TARGET_PLATFORMS = [
   { id: "trek-linux-x64", os: ["linux"], cpu: ["x64"] },
@@ -44,7 +44,10 @@ function main() {
       },
     };
 
-    fs.writeFileSync(path.join(platformDir, "package.json"), JSON.stringify(pkgContent, null, 2));
+    fs.writeFileSync(
+      path.join(platformDir, "package.json"),
+      JSON.stringify(pkgContent, null, 2) + "\n",
+    );
 
     optionalDeps[scopedName] = cleanVersion;
   }
@@ -58,7 +61,7 @@ function main() {
       ...optionalDeps,
     };
 
-    fs.writeFileSync(TREK_CLI_PKG_PATH, JSON.stringify(cliPkg, null, 2));
+    fs.writeFileSync(TREK_CLI_PKG_PATH, JSON.stringify(cliPkg, null, 2) + "\n");
     console.log("Successfully updated trek-cli/package.json and corrected all bin structures!");
   } else {
     console.error(`Error: Cannot find trek-cli/package.json at ${TREK_CLI_PKG_PATH}`);
