@@ -47,11 +47,8 @@ async fn login_async() -> Result<()> {
 
     let code = &chal.code;
     let url = format!("{base}/cli-login?code={code}");
-    let mut cmd = if cfg!(target_os = "macos") {
-        let mut c = std::process::Command::new("open");
-        c.arg(&url);
-        c
-    } else if cfg!(target_os = "windows") {
+
+    if cfg!(target_os = "windows") {
         let mut c = std::process::Command::new("cmd");
         c.args(["/c", "start", &url]);
         c
