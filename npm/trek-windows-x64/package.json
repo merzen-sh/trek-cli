@@ -1,0 +1,13 @@
+{
+  "name": "@trek-cli/trek-windows-x64",
+  "version": "0.0.0",
+  "bin": {
+    "trek": "./trek.exe"
+  },
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ]
+}

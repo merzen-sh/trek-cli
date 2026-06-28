@@ -1,0 +1,13 @@
+{
+  "name": "@trek-cli/trek-linux-x64",
+  "version": "0.0.0",
+  "bin": {
+    "trek": "./trek"
+  },
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ]
+}

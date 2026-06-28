@@ -1,9 +1,14 @@
 {
   "name": "@trek-cli/trek",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "bin": "./bin/index.js",
   "files": [
     "./bin/index.js"
   ],
-  "optionalDependencies": {}
+  "optionalDependencies": {
+    "@trek-cli/trek-linux-arm64": "0.0.0",
+    "@trek-cli/trek-linux-x64": "0.0.0",
+    "@trek-cli/trek-windows-arm64": "0.0.0",
+    "@trek-cli/trek-windows-x64": "0.0.0"
+  }
 }

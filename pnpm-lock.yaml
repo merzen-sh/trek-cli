@@ -17,6 +17,14 @@ importers:
 
   npm/trek-cli: {}
 
+  npm/trek-linux-arm64: {}
+
+  npm/trek-linux-x64: {}
+
+  npm/trek-windows-arm64: {}
+
+  npm/trek-windows-x64: {}
+
   packages/api-types: {}
 
   packages/app:
@@ -104,8 +112,6 @@ importers:
         specifier: ^8.0.12
         version: 8.1.0(@types/node@24.13.2)(jiti@2.7.0)
 
-  packages/trek-wasm-web: {}
-
   packages/ui:
     dependencies:
       class-variance-authority:
@@ -133,6 +139,8 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.17)
+
+  packages/wasm-web: {}
 
 packages:
 
