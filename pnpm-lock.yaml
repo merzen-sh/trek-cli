@@ -17,8 +17,6 @@ importers:
 
   npm/trek-cli: {}
 
-  npm/trek-wasm-web: {}
-
   packages/api-types: {}
 
   packages/app:
@@ -105,6 +103,8 @@ importers:
       vite:
         specifier: ^8.0.12
         version: 8.1.0(@types/node@24.13.2)(jiti@2.7.0)
+
+  packages/trek-wasm-web: {}
 
   packages/ui:
     dependencies:

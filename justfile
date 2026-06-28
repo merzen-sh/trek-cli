@@ -33,16 +33,16 @@ install-wasm-tools:
 compile-wasm:
     cargo build -p trek-wasm --target wasm32-unknown-unknown --release
 
-bindgen-wasm target:
+bindgen-wasm:
     wasm-bindgen target/wasm32-unknown-unknown/release/trek_wasm.wasm \
-        --out-dir npm/trek-wasm-{{ target }} \
+        --out-dir packages/wasm-web \
         --no-demangle \
-        --target {{ target }} \
+        --target web \
         --typescript
 
 build-wasm:
     just compile-wasm
-    just bindgen-wasm web
+    just bindgen-wasm
 
 shear:
     @cargo shear --fix
