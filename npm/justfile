@@ -1,0 +1,13 @@
+VERSION := shell("cat ../version 2>/dev/null | sed -n '1 p' || echo 'v0.0.0'")
+COMMIT_SHA := shell("git rev-parse --short HEAD 2>/dev/null || echo 'dev'")
+
+info:
+    @echo "Version: {{VERSION}}"
+    @echo "Commit:  {{COMMIT_SHA}}"
+
+generate-packages:
+    @echo "Generating packages..."
+
+release:
+    @echo "Releasing..."
+

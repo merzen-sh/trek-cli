@@ -1,0 +1,17 @@
+[package]
+name = "trek-fxmanifest"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde = { workspace = true, features = ["derive"], optional = true }
+
+[features]
+serialize = ["dep:serde"]
+
+[dev-dependencies]
+criterion = { version = "0", features = ["html_reports"] }
+
+[[bench]]
+name = "parse_bench"
+harness = false

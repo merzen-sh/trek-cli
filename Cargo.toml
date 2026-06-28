@@ -1,0 +1,43 @@
+[workspace]
+resolver = "2"
+members = ["./crates/trek", "./crates/trek-wasm", "./crates/trek-fxmanifest"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+
+[workspace.dependencies]
+clap = { version = "4.6.1", default-features = false, features = [
+  "std",
+  "derive",
+  "help",
+  "usage",
+  "error-context",
+] }
+serde = "1"
+serde_json = { version = "1", features = ["preserve_order"] }
+anyhow = "1.0"
+axum = { version = "0.7", default-features = false, features = ["json"] }
+tokio = { version = "1", default-features = false, features = ["rt", "net", "time"] }
+hyper = { version = "1.0", default-features = false, features = ["http1", "server"] }
+hyper-util = { version = "0.1", default-features = false, features = [
+  "tokio",
+  "client-legacy",
+  "http1",
+] }
+tower-service = "0.3"
+utoipa = "5"
+utoipa-swagger-ui = { version = "8", default-features = false, features = ["axum"] }
+bytes = "1"
+http-body-util = "0.1"
+trek-fxmanifest = { path = "crates/trek-fxmanifest" }
+
+[workspace.lints]
+rust = {}
+
+[profile.release]
+lto = true
+opt-level = "z"
+strip = true
+codegen-units = 1
+panic = "abort"

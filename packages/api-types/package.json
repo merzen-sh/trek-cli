@@ -1,0 +1,10 @@
+{
+  "name": "@trek/api-types",
+  "description": "API types for trek",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate-api-types": "pnpm dlx openapi-typescript ./redocly.yaml"
+  }
+}

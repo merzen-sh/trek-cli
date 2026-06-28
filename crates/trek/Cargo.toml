@@ -1,0 +1,29 @@
+[package]
+name = "trek"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+clap.workspace = true
+anyhow.workspace = true
+axum.workspace = true
+tokio = { workspace = true, features = ["rt", "net", "time", "io-util", "macros"] }
+hyper = { workspace = true, features = ["http1", "server", "client"] }
+hyper-util = { workspace = true, features = ["tokio", "client-legacy", "http1"] }
+tower-service.workspace = true
+utoipa = { workspace = true, optional = true }
+utoipa-swagger-ui = { workspace = true, optional = true }
+bytes.workspace = true
+http-body-util.workspace = true
+rust-embed = { version = "8.11", default-features = false }
+serde = { workspace = true, features = ["derive"] }
+toml = { version = "0.8", default-features = false, features = ["parse", "display"] }
+inquire = { version = "0.7", default-features = false, features = ["console"] }
+reqwest = { version = "0.12", default-features = false, features = ["native-tls", "json"] }
+serde_json.workspace = true
+
+trek-fxmanifest = { workspace = true, features = ["serialize"] }
+
+[features]
+swagger = ["dep:utoipa", "dep:utoipa-swagger-ui"]
+release-embed = ["rust-embed/compression"]
