@@ -4,7 +4,7 @@ import * as path from "path";
 const version = process.argv[2];
 
 if(!version){
-    console.log("missing version");
+    console.error("missing version");
     process.exit(1);
 }
 
