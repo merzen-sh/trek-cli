@@ -1,8 +1,12 @@
 import * as fs from "fs";
 import * as path from "path";
 
-const rawVersion = process.argv[2] || "v0.0.0";
-const cleanVersion = rawVersion.replace(/^v/, "");
+const version = process.argv[2];
+
+if(!version){
+    console.log("missing version");
+    process.exit(1);
+}
 
 const NPM_DIR = path.join(__dirname, "../npm");
 const TREK_CLI_PKG_PATH = path.join(NPM_DIR, "trek-cli/package.json");
@@ -15,7 +19,7 @@ const TARGET_PLATFORMS = [
 ];
 
 function main() {
-  console.log(`Generating scoped packages for version: ${cleanVersion}`);
+  console.log(`Generating scoped packages for version: ${version}`);
 
   if (!fs.existsSync(NPM_DIR)) {
     fs.mkdirSync(NPM_DIR, { recursive: true });
@@ -36,7 +40,7 @@ function main() {
 
     const pkgContent = {
       name: scopedName,
-      version: cleanVersion,
+      version: version,
       os: platform.os,
       cpu: platform.cpu,
       bin: {
@@ -49,13 +53,13 @@ function main() {
       JSON.stringify(pkgContent, null, 2) + "\n",
     );
 
-    optionalDeps[scopedName] = cleanVersion;
+    optionalDeps[scopedName] = version;
   }
 
   if (fs.existsSync(TREK_CLI_PKG_PATH)) {
     const cliPkg = JSON.parse(fs.readFileSync(TREK_CLI_PKG_PATH, "utf8"));
 
-    cliPkg.version = cleanVersion;
+    cliPkg.version = version;
     cliPkg.optionalDependencies = {
       ...cliPkg.optionalDependencies,
       ...optionalDeps,
