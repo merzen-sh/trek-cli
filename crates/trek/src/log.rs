@@ -38,9 +38,6 @@ pub fn base_url() -> String {
     std::env::var("BASE_URL").unwrap_or_else(|_| "http://localhost:3000".to_string())
 }
 
-// ---------------------------------------------------------------------------
-// Minimal logger
-// ---------------------------------------------------------------------------
 
 #[derive(Copy, Clone, Debug)]
 #[doc(hidden)]
@@ -89,10 +86,6 @@ pub fn log(level: Level, args: std::fmt::Arguments) {
 pub fn init() {
     // Nothing to do — we write directly to stderr per-message.
 }
-
-// ---------------------------------------------------------------------------
-// Public macros — drop-in replacements for tracing::info! etc.
-// ---------------------------------------------------------------------------
 
 /// Log an ERROR message to stderr.
 #[macro_export]

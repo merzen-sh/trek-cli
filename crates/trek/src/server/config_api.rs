@@ -1,3 +1,4 @@
+use crate::log_success;
 use axum::Json;
 use axum::extract::{Path, Request};
 use axum::http::StatusCode;
@@ -106,6 +107,7 @@ pub async fn save_config(Path(name): Path<String>, req: Request) -> Response {
     let path = dir.join("config.json");
     match std::fs::write(&path, &formatted) {
         Ok(_) => {
+            log_success!("Configuration saved to {}", path.to_string_lossy());
             Json(serde_json::json!({"ok": true, "path": path.to_string_lossy()})).into_response()
         }
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),

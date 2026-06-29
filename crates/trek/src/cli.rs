@@ -1,5 +1,6 @@
 use crate::server::run_server;
 use crate::{config::Config, login, scripts::Scripts};
+use crate::{log_error, log_success};
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use std::path::Path;
@@ -66,7 +67,7 @@ pub fn run() -> Result<()> {
                 SetKey::WorkspaceDir { path } => {
                     let mut config = Config::load()?;
                     config.set_workspace_dir(Path::new(path))?;
-                    println!(
+                    log_success!(
                         "workspace_dir set to {}",
                         config.workspace_dir.as_deref().unwrap_or("?"),
                     );
@@ -77,7 +78,7 @@ pub fn run() -> Result<()> {
             ScriptsCommands::List => {
                 let scripts = Scripts::load()?;
                 if scripts.scripts.is_empty() {
-                    println!("no scripts found in workspace");
+                    log_error!("no scripts found in workspace");
                 } else {
                     for script in &scripts.scripts {
                         let version = script.version.as_deref().unwrap_or("-");

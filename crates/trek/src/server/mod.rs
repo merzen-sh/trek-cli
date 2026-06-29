@@ -7,7 +7,7 @@ mod router;
 mod scripts_api;
 mod theme_api;
 
-use crate::{log_info, log_warn};
+use crate::{log_info, log_success, log_warn};
 use axum::extract::Request;
 use axum::http::StatusCode;
 use axum::middleware;
@@ -59,6 +59,14 @@ pub fn base_url() -> String {
     crate::log::base_url()
 }
 
+const BANNER: &str = "
+    ████████╗██████╗ ███████╗██╗  ██╗
+    ╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
+       ██║   ██████╔╝█████╗  █████╔╝ 
+       ██║   ██╔══██╗██╔══╝  ██╔═██╗ 
+       ██║   ██║  ██║███████╗██║  ██╗
+       ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝";
+
 impl Server {
     pub fn new(port: u16) -> Self {
         Self { port }
@@ -66,6 +74,11 @@ impl Server {
 
     pub async fn run(self) -> anyhow::Result<()> {
         let pin = auth_pin();
+
+        println!("{}\n",BANNER);
+
+        let start = std::time::Instant::now();
+
         let host = if self.port == 80 {
             format!("http://localhost")
         } else {
@@ -77,10 +90,13 @@ impl Server {
         let addr = SocketAddr::from(([0, 0, 0, 0], self.port));
         let listener = TcpListener::bind(addr).await?;
 
+
         #[cfg(all(not(feature = "swagger"), debug_assertions))]
         log_warn!("!!! swagger disabled. Enable swagger feature for debug builds");
 
         log_info!("listening on {addr}");
+
+        log_success!("ready in {}ms", start.elapsed().as_millis());
 
         loop {
             let (stream, _peer) = listener.accept().await?;

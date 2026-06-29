@@ -1,9 +1,8 @@
+use crate::{server::base_url, log_success};
 use anyhow::{Context, Result};
 use serde::Deserialize;
 use std::io::Write;
 use std::time::Duration;
-
-use crate::server::base_url;
 
 #[derive(Deserialize)]
 struct ChallengeResponse {
@@ -120,7 +119,7 @@ async fn login_async() -> Result<()> {
     config.user = Some(claim.user);
     config.save()?;
 
-    println!("Logged in as {username}!");
+    log_success!("Logged in as {username}!");
 
     Ok(())
 }
