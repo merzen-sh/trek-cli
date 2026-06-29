@@ -56,7 +56,12 @@ async fn login_async() -> Result<()> {
         c.arg(&url);
         c
     };
-    if cmd.spawn().is_ok() {
+    if cmd
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .spawn()
+        .is_ok()
+    {
         println!("Opened browser");
     } else {
         println!("Open this URL:\n{url}");
