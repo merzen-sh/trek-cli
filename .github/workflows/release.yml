@@ -125,9 +125,11 @@ jobs:
         settings:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
+            ext: ""
 
           - os: windows-latest
             target: x86_64-pc-windows-msvc
+            ext: ".exe"
 
     runs-on: ${{ matrix.settings.os }}
 
@@ -151,13 +153,13 @@ jobs:
 
       - name: Binary rename
         run: |
-          mv target/${{ matrix.settings.target }}/release/trek target/${{ matrix.settings.target }}/release/trek-${{ matrix.settings.target }}
+          mv target/${{ matrix.settings.target }}/release/trek${{ matrix.settings.ext }} target/${{ matrix.settings.target }}/release/trek-${{ matrix.settings.target }}${{ matrix.settings.ext }}
 
       - name: upload trek-cli
         uses: actions/upload-artifact@v7
         with:
           name: trek-${{ matrix.settings.target }}
-          path: target/${{ matrix.settings.target }}/release/trek-${{ matrix.settings.target }}
+          path: target/${{ matrix.settings.target }}/release/trek-${{ matrix.settings.target }}${{ matrix.settings.ext }}
 
   release:
     needs: [build-rust, bump-version]
