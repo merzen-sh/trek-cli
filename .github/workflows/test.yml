@@ -10,7 +10,23 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      rust: ${{ steps.filter.outputs.rust }}
+    steps:
+      - name: Check for File Changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            rust:
+              - '**/*.rs'
+              - 'Cargo.toml'
+  
   test:
+    needs: check
+    if: needs.check.outputs.rust == 'true'
     strategy:
       fail-fast: false
       matrix:
