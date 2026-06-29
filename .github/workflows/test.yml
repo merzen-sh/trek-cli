@@ -15,6 +15,9 @@ jobs:
     outputs:
       rust: ${{ steps.filter.outputs.rust }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
       - name: Check for File Changes
         uses: dorny/paths-filter@v3
         id: filter
