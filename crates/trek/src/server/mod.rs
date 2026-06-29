@@ -7,6 +7,8 @@ mod router;
 mod scripts_api;
 mod theme_api;
 
+#[cfg(not(debug_assertions))]
+use crate::log_debug;
 use crate::{log_info, log_success, log_warn};
 use axum::extract::Request;
 use axum::http::StatusCode;
@@ -76,6 +78,13 @@ impl Server {
         let pin = auth_pin();
 
         println!("{}\n", BANNER);
+
+        #[cfg(not(debug_assertions))]
+        tokio::spawn(async move {
+            if let Err(err) = crate::update::check_for_updates().await {
+                log_debug!("update check failed: {err}");
+            }
+        });
 
         let start = std::time::Instant::now();
 

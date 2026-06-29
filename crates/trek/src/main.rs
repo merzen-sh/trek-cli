@@ -4,6 +4,7 @@ mod log;
 mod login;
 mod scripts;
 mod server;
+mod update;
 
 fn main() -> anyhow::Result<()> {
     log::init();

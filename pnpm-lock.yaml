@@ -14,16 +14,9 @@ importers:
       oxlint:
         specifier: ^1.71.0
         version: 1.71.0
-
-  npm/trek-cli: {}
-
-  npm/trek-linux-arm64: {}
-
-  npm/trek-linux-x64: {}
-
-  npm/trek-windows-arm64: {}
-
-  npm/trek-windows-x64: {}
+      semver:
+        specifier: ^7.7.1
+        version: 7.8.5
 
   packages/api-types: {}
 

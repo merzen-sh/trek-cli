@@ -1,7 +1,7 @@
 use crate::{log_success, server::base_url};
 use anyhow::{Context, Result};
 use serde::Deserialize;
-use std::io::Write;
+use std::io::{self, Write};
 use std::time::Duration;
 
 #[derive(Deserialize)]
@@ -68,7 +68,7 @@ async fn login_async() -> Result<()> {
     }
 
     let mut tick = 0u32;
-    let frameset = ['|', '/', '-', '\\'];
+    let frameset = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
     let status_url = format!("{base}/api/cli/challenge/{code}/status");
     let deadline = tokio::time::Instant::now() + Duration::from_secs(300);
 
@@ -76,27 +76,27 @@ async fn login_async() -> Result<()> {
         tick += 1;
 
         if tokio::time::Instant::now() > deadline {
-            println!(
-                "\r✗ Timed out after 5 minutes                                                            "
-            );
+            print!("\r\x1b[2K\x1b[31m✗\x1b[0m Timed out after 5 minutes\n");
+            io::stdout().flush().ok();
             anyhow::bail!("timed out waiting for authorization");
         }
 
+        let frame = frameset[tick as usize % frameset.len()];
         print!(
-            "\r{} {}                                                       ",
-            frameset[tick as usize % frameset.len()],
-            url,
+            "\r\x1b[2K\x1b[32m{}\x1b[0m Waiting for authorization at {}...",
+            frame, url
         );
-        std::io::stdout().flush().ok();
+        io::stdout().flush().ok();
+
         tokio::time::sleep(Duration::from_millis(100)).await;
 
         if tick % 20 == 0 {
             let resp = client.get(&status_url).send().await?;
             let status: StatusResponse = resp.json().await?;
+
             if status.status == "authorized" {
-                println!(
-                    "\r✓ Authorization received!                                                            "
-                );
+                print!("\r\x1b[2K\x1b[32m✓\x1b[0m Authorization received!\n");
+                io::stdout().flush().ok();
                 break;
             }
         }

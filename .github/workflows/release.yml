@@ -1,0 +1,131 @@
+name: release-wip
+
+on:
+  workflow_dispatch:
+    inputs:
+      increment:
+        description: "SemVer Increment"
+        required: true
+        default: "prerelease"
+        type: choice
+        options:
+          - prerelease
+          - prepatch
+          - preminor
+          - premajor
+          - patch
+          - minor
+          - major
+      releaseType:
+        description: "Release type"
+        required: true
+        type: choice
+        options:
+          - latest
+          - canary
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      release-tag: ${{ steps.version.outputs.release-tag }}
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-tags: true
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          run_install: false
+
+      - name: install
+        run: pnpm install --frozen-lockfile
+
+      - name: version
+        id: version
+        run: |
+          node scripts/compute-version.js "${{ inputs.increment }}" "${{ inputs.releaseType }}"
+          VERSION=$(cat version | head -n 1)
+          RELEASE_TAG=$(cat version | tail -n 1)
+          echo "   DEBUG: version = $VERSION"
+          echo "   DEBUG: release-tag = $RELEASE_TAG"
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "releaseTag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: bump version
+        run: |
+          ./scripts/bump-version.sh "${{ steps.version.outputs.version }}"
+
+  build-app:
+    needs: bump-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          run_install: false
+
+      - name: install
+        run: pnpm install --frozen-lockfile
+
+      - name: build app
+        run: pnpm --filter app build
+
+      - name: upload app build
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-dist
+          path: packages/app/dist/
+
+  build-rust:
+    needs: [bump-version, build-app]
+    strategy:
+      matrix:
+        settings:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+
+    runs-on: ${{ matrix.settings.os }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download app artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: app-dist
+          path: packages/app/dist/
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.96.0
+          targets: ${{ matrix.settings.target }}
+
+      - name: Build rust
+        run: cargo build --target ${{ matrix.settings.target }} -p trek --release
+
+      - name: upload trek-cli
+        uses: actions/upload-artifact@v3
+        with:
+          name: trek-${{ matrix.settings.target }}
+          path: target/${{ matrix.settings.target }}/release/trek
