@@ -70,6 +70,26 @@ jobs:
         run: |
           ./scripts/bump-version.sh "${{ steps.version.outputs.version }}"
 
+      - name: Generate Changelog
+        uses: orhun/git-cliff-action@v4
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: --tag ${{ steps.version.outputs.release-tag }}
+        env:
+          OUTPUT: CHANGELOG.md
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "release: bump version to ${{ steps.version.outputs.version }}"
+          title: "release: v${{ steps.version.outputs.version }}"
+          body-path: ./CHANGELOG.md
+          base: main
+          branch: release/v${{ steps.version.outputs.release-tag }}
+
   build-app:
     needs: bump-version
     runs-on: ubuntu-latest
@@ -128,8 +148,40 @@ jobs:
       - name: Build rust
         run: cargo build --target ${{ matrix.settings.target }} -p trek --release
 
+      - name: Binary rename
+        run: |
+          mv target/${{ matrix.settings.target }}/release/trek target/${{ matrix.settings.target }}/release/trek-${{ matrix.settings.target }}
+
       - name: upload trek-cli
         uses: actions/upload-artifact@v7
         with:
           name: trek-${{ matrix.settings.target }}
-          path: target/${{ matrix.settings.target }}/release/trek
+          path: target/${{ matrix.settings.target }}/release/trek-${{ matrix.settings.target }}
+
+  release:
+    needs: [build-rust, bump-version]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: trek-*
+          path: ./binaries/
+
+      - name: compress binaries for each platform
+        run: ./scripts/prepare-tarball.sh
+
+      - name: generate SHASUMS.txt
+        run: ./scripts/generate-checksums.sh
+
+      - name: release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.bump-version.outputs.release-tag }}
+          release_name: Trek CLI v${{ needs.bump-version.outputs.release-tag }}
+          draft: false
+          prerelease: ${{ inputs.releaseType == 'canary'}}
+          asset_path: ./dist

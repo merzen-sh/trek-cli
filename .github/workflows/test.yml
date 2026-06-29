@@ -27,7 +27,7 @@ jobs:
               - '**/*.rs'
               - 'Cargo.toml'
               - '.github/workflows/test.yml'
-  
+
   test:
     needs: check
     if: needs.check.outputs.rust == 'true'
