@@ -26,6 +26,7 @@ jobs:
             rust:
               - '**/*.rs'
               - 'Cargo.toml'
+              - '.github/workflows/test.yml'
   
   test:
     needs: check
