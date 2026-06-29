@@ -38,7 +38,6 @@ pub fn base_url() -> String {
     std::env::var("BASE_URL").unwrap_or_else(|_| "http://localhost:3000".to_string())
 }
 
-
 #[derive(Copy, Clone, Debug)]
 #[doc(hidden)]
 pub enum Level {

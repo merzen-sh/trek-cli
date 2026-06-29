@@ -75,7 +75,7 @@ impl Server {
     pub async fn run(self) -> anyhow::Result<()> {
         let pin = auth_pin();
 
-        println!("{}\n",BANNER);
+        println!("{}\n", BANNER);
 
         let start = std::time::Instant::now();
 
@@ -89,7 +89,6 @@ impl Server {
         let app = router::create().layer(middleware::from_fn(require_pin));
         let addr = SocketAddr::from(([0, 0, 0, 0], self.port));
         let listener = TcpListener::bind(addr).await?;
-
 
         #[cfg(all(not(feature = "swagger"), debug_assertions))]
         log_warn!("!!! swagger disabled. Enable swagger feature for debug builds");

@@ -3,9 +3,9 @@ import * as path from "path";
 
 const version = process.argv[2];
 
-if(!version){
-    console.error("missing version");
-    process.exit(1);
+if (!version) {
+  console.error("missing version");
+  process.exit(1);
 }
 
 const NPM_DIR = path.join(__dirname, "../npm");

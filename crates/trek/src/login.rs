@@ -1,4 +1,4 @@
-use crate::{server::base_url, log_success};
+use crate::{log_success, server::base_url};
 use anyhow::{Context, Result};
 use serde::Deserialize;
 use std::io::Write;
