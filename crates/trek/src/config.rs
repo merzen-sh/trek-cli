@@ -196,6 +196,7 @@ mod tests {
         assert_eq!(extract_name("  "), "");
     }
 
+    #[cfg(not(target_os = "windows"))]
     #[test]
     fn unix_xdg_config_home() {
         let p = path_from(
@@ -206,6 +207,7 @@ mod tests {
         assert_eq!(p, PathBuf::from("/home/user/.config/trek/config.toml"));
     }
 
+    #[cfg(not(target_os = "windows"))]
     #[test]
     fn unix_home_fallback() {
         let p = path_from(None, Some("/home/user".into()), None);
