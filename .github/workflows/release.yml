@@ -89,7 +89,7 @@ jobs:
           title: "release: v${{ steps.version.outputs.version }}"
           body-path: ./CHANGELOG.md
           base: main
-          branch: release/v${{ steps.version.outputs.release-tag }}
+          branch: release/v${{ steps.version.outputs.version }}
 
   build-app:
     needs: bump-version
@@ -165,6 +165,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: release/v${{ needs.bump-version.outputs.version }}
 
       - name: Download artifacts
         uses: actions/download-artifact@v7
@@ -181,8 +183,9 @@ jobs:
       - name: release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ needs.bump-version.outputs.release-tag }}
-          release_name: Trek CLI v${{ needs.bump-version.outputs.release-tag }}
+          tag_name: v${{ needs.bump-version.outputs.version }}
+          release_name: Trek CLI v${{ needs.bump-version.outputs.version }}
           draft: false
+          body_path: ./CHANGELOG.md
           prerelease: ${{ inputs.releaseType == 'canary'}}
           asset_path: ./dist
