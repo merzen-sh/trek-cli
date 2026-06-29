@@ -1,0 +1,26 @@
+name: cache-cleanup
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Delete all caches for this branch
+        run: |
+          gh extension install actions/gh-actions-cache
+          gh actions-cache list \
+            --repo "${{ github.repository }}" \
+            --branch "${{ github.head_ref }}" \
+            --limit 100 \
+            --json id,key \
+            --jq '.[].key' \
+            | xargs -I{} sh -c \
+              'gh actions-cache delete "{}" --repo "${{ github.repository }}" --branch "${{ github.head_ref }}" --confirm' \
+              || true
+        env:
+          GH_TOKEN: ${{ github.token }}
