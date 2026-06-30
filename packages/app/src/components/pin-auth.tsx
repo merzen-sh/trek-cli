@@ -20,8 +20,7 @@ export function PinAuth({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const { data: authStatus, isPending } = useQuery(authQuery(pin ?? ""));
 
-  const retry = () =>
-    queryClient.invalidateQueries({ queryKey: authKeys.status(pin ?? "") });
+  const retry = () => queryClient.invalidateQueries({ queryKey: authKeys.status(pin ?? "") });
 
   const onPinEntered = (enteredPin: string) => {
     setPin(enteredPin);

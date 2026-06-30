@@ -43,7 +43,6 @@ impl Server {
 
         println!("{}\n", BANNER);
 
-
         let start = std::time::Instant::now();
 
         let host = if self.port == 80 {

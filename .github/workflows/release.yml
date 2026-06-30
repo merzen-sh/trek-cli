@@ -220,7 +220,6 @@ jobs:
           OUTPUT: CHANGELOG.md
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
       - name: release
         if: ${{ !inputs.dryRun }}
         uses: softprops/action-gh-release@v1

@@ -7,8 +7,7 @@ export const getOrdersQuery = queryOptions({
   queryFn: async () => {
     const res = await apiFetch("/external/api/orders", { credentials: "include" });
     if (!res.ok) throw res;
-    const json: { status: "success"; data: import("@trek/api-types").Order[] } =
-      await res.json();
+    const json: { status: "success"; data: import("@trek/api-types").Order[] } = await res.json();
     return json.data;
   },
   staleTime: 1000 * 60 * 2,

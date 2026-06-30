@@ -8,6 +8,7 @@
 
 - Update release workflow checkout logic
 - Swap version tags in workflow
+
 ## [0.1.1] - 2026-06-30
 
 ### 🚀 Features
@@ -27,6 +28,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - Update dependencies and prevent external 401 errors from triggering local pin clearing
+
 ## [0.1.0] - 2026-06-30
 
 ### 🚀 Features
