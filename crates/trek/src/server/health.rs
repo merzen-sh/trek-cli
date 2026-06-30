@@ -1,4 +1,9 @@
+use axum::Json;
 use axum::response::IntoResponse;
+use serde_json::json;
+
+#[allow(unused_imports)]
+use serde_json::Value;
 
 #[cfg_attr(
     feature = "swagger",
@@ -6,11 +11,12 @@ use axum::response::IntoResponse;
         get,
         path = "/api/health",
         tag = "General",
+        operation_id = "health",
         responses(
-            (status = 200, description = "Health check OK", body = String)
+            (status = 200, description = "Health check OK", body = Value, content_type = "application/json")
         )
     )
 )]
 pub async fn handler() -> impl IntoResponse {
-    "OK"
+    Json(json!({ "status": "ok" }))
 }

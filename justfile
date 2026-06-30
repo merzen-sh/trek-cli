@@ -12,9 +12,21 @@ fmt:
 shadcn component:
     @pnpm run shadcn add {{ component }} --yes
 
-[working-directory("./packages/api-types")]
 api-types:
-    @pnpm run generate-api-types
+    #!/usr/bin/env bash
+    set -euo pipefail
+    PORT=9090
+    cargo run -p trek --features swagger -- --port $PORT &
+    SERVER_PID=$!
+    for i in $(seq 1 30); do
+        if curl -sf http://localhost:$PORT/api/health > /dev/null 2>&1; then
+            break
+        fi
+        sleep 0.5
+    done
+    (cd packages/api-types && pnpm run generate-api-types)
+    kill $SERVER_PID 2>/dev/null || true
+    wait $SERVER_PID 2>/dev/null || true
 
 [working-directory("./packages/app")]
 build-app:

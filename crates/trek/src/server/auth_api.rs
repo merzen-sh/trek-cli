@@ -34,6 +34,20 @@ pub async fn require_pin(req: Request, next: middleware::Next) -> Response {
     next.run(req).await
 }
 
+#[cfg_attr(
+    feature = "swagger",
+    utoipa::path(
+        get,
+        path = "/api/auth",
+        tag = "Authentication",
+        operation_id = "auth",
+        responses(
+            (status = 200, description = "Authenticated with valid session"),
+            (status = 401, description = "Invalid pin"),
+            (status = 403, description = "Valid pin but no session (not logged in)")
+        )
+    )
+)]
 pub async fn handler(req: Request) -> impl IntoResponse {
     let pin = req
         .headers()

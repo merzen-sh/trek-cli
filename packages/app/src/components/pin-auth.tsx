@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { hasPin, getPin, setPin, clearPin } from "../lib/api";
+import { hasPin, getPin, setPin, clearPin, client } from "../lib/api";
 import { authQuery, authKeys } from "../data/getAuth";
 
 export function PinAuth({ children }: { children: ReactNode }) {
@@ -104,12 +104,10 @@ function PinEntry({ onAuthorized }: { onAuthorized: (pin: string) => void }) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(false);
-    const res = await fetch("/api/check-pin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pin: value }),
+    const { response } = await client.POST("/api/check-pin", {
+      body: { pin: value },
     });
-    if (res.ok) {
+    if (response.ok) {
       onAuthorized(value);
     } else {
       setError(true);

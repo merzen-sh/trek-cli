@@ -29,6 +29,22 @@ fn script_dir(name: &str) -> Result<PathBuf, Response> {
     Ok(dir)
 }
 
+#[cfg_attr(
+    feature = "swagger",
+    utoipa::path(
+        get,
+        path = "/api/scripts/{name}/theme-schema",
+        tag = "Theme",
+        params(
+            ("name" = String, Path, description = "Script name")
+        ),
+        responses(
+            (status = 200, description = "Theme schema JSON", body = Value, content_type = "application/json"),
+            (status = 404, description = "Script or theme_schema.json not found"),
+            (status = 500, description = "Internal server error")
+        )
+    )
+)]
 pub async fn get_theme_schema(Path(name): Path<String>) -> Response {
     let dir = match script_dir(&name) {
         Ok(d) => d,
@@ -53,6 +69,22 @@ pub async fn get_theme_schema(Path(name): Path<String>) -> Response {
     Json(schema).into_response()
 }
 
+#[cfg_attr(
+    feature = "swagger",
+    utoipa::path(
+        get,
+        path = "/api/scripts/{name}/theme",
+        tag = "Theme",
+        params(
+            ("name" = String, Path, description = "Script name")
+        ),
+        responses(
+            (status = 200, description = "Current theme JSON", body = Value, content_type = "application/json"),
+            (status = 404, description = "Script not found"),
+            (status = 500, description = "Internal server error")
+        )
+    )
+)]
 pub async fn get_theme(Path(name): Path<String>) -> Response {
     let dir = match script_dir(&name) {
         Ok(d) => d,
@@ -77,6 +109,24 @@ pub async fn get_theme(Path(name): Path<String>) -> Response {
     Json(value).into_response()
 }
 
+#[cfg_attr(
+    feature = "swagger",
+    utoipa::path(
+        post,
+        path = "/api/scripts/{name}/theme",
+        tag = "Theme",
+        params(
+            ("name" = String, Path, description = "Script name")
+        ),
+        request_body(content = Value, content_type = "application/json", description = "Theme JSON to save"),
+        responses(
+            (status = 200, description = "Theme saved", body = Value, content_type = "application/json"),
+            (status = 400, description = "Invalid request or JSON body"),
+            (status = 404, description = "Script not found"),
+            (status = 500, description = "Internal server error")
+        )
+    )
+)]
 pub async fn save_theme(Path(name): Path<String>, req: Request) -> Response {
     let dir = match script_dir(&name) {
         Ok(d) => d,
