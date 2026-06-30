@@ -189,10 +189,15 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: release/v${{ needs.bump-version.outputs.version }}
+          fetch-tags: true
+          fetch-depth: 0
 
       - name: Checkout (Dry Run)
         if: ${{ inputs.dryRun }}
         uses: actions/checkout@v6
+        with:
+          fetch-tags: true
+          fetch-depth: 0
 
       - name: Download artifacts
         uses: actions/download-artifact@v7
