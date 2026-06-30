@@ -170,7 +170,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: trek-${{ matrix.settings.target }}
-          path: dist/trek-*
+          path: dist/trek-${{ matrix.settings.target }}${{ matrix.settings.ext }}
 
   release:
     needs: [build-rust, bump-version]

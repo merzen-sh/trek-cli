@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-rm -rf "./dist"
-mkdir -p "./dist"
+rm -rf "./release"
+mkdir -p "./release"
 
 SOURCE_DIR="$(realpath ./dist)"
 RELEASE_DIR="$(realpath ./release)"

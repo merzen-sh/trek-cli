@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-SOURCE_DIR="$(realpath ./dist)"
+SOURCE_DIR="$(realpath ./release)"
 RELEASE_DIR="$(realpath ./release)"
 OUTPUT_FILE="$RELEASE_DIR/SHASUMS.txt"
 
