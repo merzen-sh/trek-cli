@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-SOURCE_DIR="$(realpath ./binaries)"
-RELEASE_DIR="$(realpath ./dist)"
+SOURCE_DIR="$(realpath ./dist)"
+RELEASE_DIR="$(realpath ./release)"
 OUTPUT_FILE="$RELEASE_DIR/SHASUMS.txt"
 
 if [ ! -d "$SOURCE_DIR" ]; then

@@ -5,8 +5,8 @@ set -euo pipefail
 rm -rf "./dist"
 mkdir -p "./dist"
 
-SOURCE_DIR="$(realpath ./binaries)"
-RELEASE_DIR="$(realpath ./dist)"
+SOURCE_DIR="$(realpath ./dist)"
+RELEASE_DIR="$(realpath ./release)"
 
 if [ ! -d "$SOURCE_DIR" ]; then
     echo "❌ Could not find the source directory $SOURCE_DIR"
