@@ -74,14 +74,14 @@ jobs:
 
       - name: bump version
         run: |
-          ./scripts/bump-version.sh "${{ steps.version.outputs.version }}"
+          ./scripts/bump-version.sh "${{ steps.version.outputs.releaseTag }}"
 
       - name: Generate Changelog
         uses: orhun/git-cliff-action@v4
         id: git-cliff
         with:
           config: cliff.toml
-          args: --tag ${{ steps.version.outputs.releaseTag }}
+          args: --tag ${{ steps.version.outputs.version }}
         env:
           OUTPUT: CHANGELOG.md
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -204,6 +204,17 @@ jobs:
 
       - name: generate SHASUMS.txt
         run: ./scripts/generate-checksums.sh
+
+      - name: Generate Changelog
+        uses: orhun/git-cliff-action@v4
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: --unreleased --tag ${{ needs.bump-version.outputs.version }}
+        env:
+          OUTPUT: CHANGELOG.md
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: release
         if: ${{ !inputs.dryRun }}
