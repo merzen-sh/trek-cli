@@ -1,3 +1,4 @@
+use crate::{log_error, log_success};
 use axum::extract::Request;
 use axum::http::StatusCode;
 use axum::middleware;
@@ -55,10 +56,14 @@ pub async fn handler(req: Request) -> impl IntoResponse {
         .and_then(|v| v.to_str().ok())
         .unwrap_or("");
     if pin != *AUTH_PIN.lock().unwrap() {
+        log_error!("Invalid pin {}", pin);
         return StatusCode::UNAUTHORIZED;
     }
     match crate::config::Config::load() {
-        Ok(cfg) if cfg.session_id.is_some() => StatusCode::OK,
+        Ok(cfg) if cfg.session_id.is_some() => {
+            log_success!("Authenticated with valid session");
+            StatusCode::OK
+        }
         _ => StatusCode::FORBIDDEN,
     }
 }

@@ -36,7 +36,9 @@ export function groupKeyToCssVar(group: string, key: string): string {
   return `--${group}-${key}`.replace(/_/g, "-");
 }
 
-export function buildGroupDefaults(properties: Record<string, SchemaProp>): Record<string, unknown> {
+export function buildGroupDefaults(
+  properties: Record<string, SchemaProp>,
+): Record<string, unknown> {
   const defaults: Record<string, unknown> = {};
   for (const [key, prop] of Object.entries(properties)) {
     if (prop.default !== undefined) {

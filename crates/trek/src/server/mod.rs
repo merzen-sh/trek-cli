@@ -1,14 +1,7 @@
-mod auth_api;
-mod check_pin;
-mod config_api;
-mod health;
 mod proxy;
-mod proxy_api;
 mod router;
-mod scripts_api;
-mod theme_api;
 
-pub use auth_api::{auth_pin, require_pin};
+pub use crate::api::auth_api::{auth_pin, require_pin};
 
 #[cfg(all(not(feature = "swagger"), debug_assertions))]
 use crate::log_warn;
