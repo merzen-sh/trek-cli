@@ -1,4 +1,10 @@
-## [latest] - 2026-06-30
+## [0.1.2] - 2026-06-30
+
+### ⚙️ Miscellaneous Tasks
+
+- Update release workflow checkout logic
+- Swap version tags in workflow
+## [0.1.1] - 2026-06-30
 
 ### 🚀 Features
 
@@ -9,10 +15,6 @@
 ### 🐛 Bug Fixes
 
 - Use backslash path separator in install.ps1
-
-### 💼 Other
-
-- V0.1.0 (#6)
 
 ### 🚜 Refactor
 

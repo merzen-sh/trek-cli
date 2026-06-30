@@ -3,7 +3,7 @@ resolver = "2"
 members = ["./crates/trek", "./crates/trek-wasm", "./crates/trek-fxmanifest"]
 
 [workspace.package]
-version = "0.1.1"
+version = "latest"
 edition = "2024"
 
 [workspace.dependencies]
