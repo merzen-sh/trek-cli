@@ -27,6 +27,7 @@ mod swagger {
 pub fn create() -> Router {
     let router = Router::new()
         .route("/api/health", get(crate::server::health::handler))
+        .route("/api/auth", get(crate::server::auth_api::handler))
         .route("/api/check-pin", post(crate::server::check_pin::handler))
         .route(
             "/external/api/scripts",

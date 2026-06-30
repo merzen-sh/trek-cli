@@ -1,3 +1,4 @@
+mod auth_api;
 mod check_pin;
 mod config_api;
 mod health;
@@ -7,46 +8,14 @@ mod router;
 mod scripts_api;
 mod theme_api;
 
+pub use auth_api::{auth_pin, require_pin};
+
 #[cfg(all(not(feature = "swagger"), debug_assertions))]
 use crate::log_warn;
 use crate::{log_info, log_success};
-use axum::extract::Request;
-use axum::http::StatusCode;
 use axum::middleware;
-use axum::response::{IntoResponse, Response};
 use std::net::SocketAddr;
-use std::sync::LazyLock;
-use std::sync::Mutex;
 use tokio::net::TcpListener;
-
-static AUTH_PIN: LazyLock<Mutex<String>> = LazyLock::new(|| {
-    let ns = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_nanos();
-    let pin = format!("{:06}", ns % 1_000_000);
-    Mutex::new(pin)
-});
-
-pub fn auth_pin() -> String {
-    AUTH_PIN.lock().unwrap().clone()
-}
-
-async fn require_pin(req: Request, next: middleware::Next) -> Response {
-    let path = req.uri().path().to_string();
-    if !path.starts_with("/external/") {
-        return next.run(req).await;
-    }
-    let pin = req
-        .headers()
-        .get("x-auth-pin")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("");
-    if pin != *AUTH_PIN.lock().unwrap() {
-        return (StatusCode::UNAUTHORIZED, "invalid pin").into_response();
-    }
-    next.run(req).await
-}
 
 pub struct Server {
     port: u16,

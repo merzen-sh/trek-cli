@@ -1,4 +1,4 @@
-function getPin(): string {
+export function getPin(): string {
   return sessionStorage.getItem("trek-pin") ?? "";
 }
 
