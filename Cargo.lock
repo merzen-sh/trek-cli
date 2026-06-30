@@ -1792,7 +1792,7 @@ dependencies = [
 
 [[package]]
 name = "trek"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "axum",
@@ -1816,7 +1816,7 @@ dependencies = [
 
 [[package]]
 name = "trek-fxmanifest"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "criterion",
  "serde",
@@ -1824,7 +1824,7 @@ dependencies = [
 
 [[package]]
 name = "trek-wasm"
-version = "0.1.1"
+version = "0.1.2"
 
 [[package]]
 name = "try-lock"
