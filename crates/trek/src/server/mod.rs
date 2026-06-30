@@ -7,22 +7,17 @@ mod router;
 mod scripts_api;
 mod theme_api;
 
-#[cfg(not(debug_assertions))]
-use crate::log_debug;
-use crate::{log_info, log_success, log_warn};
+#[cfg(all(not(feature = "swagger"), debug_assertions))]
+use crate::log_warn;
+use crate::{log_info, log_success};
 use axum::extract::Request;
 use axum::http::StatusCode;
 use axum::middleware;
 use axum::response::{IntoResponse, Response};
-use hyper::body::Incoming;
-use hyper::server::conn::http1;
-use hyper::service::service_fn;
-use hyper_util::rt::TokioIo;
 use std::net::SocketAddr;
 use std::sync::LazyLock;
 use std::sync::Mutex;
 use tokio::net::TcpListener;
-use tower_service::Service;
 
 static AUTH_PIN: LazyLock<Mutex<String>> = LazyLock::new(|| {
     let ns = std::time::SystemTime::now()
@@ -79,12 +74,6 @@ impl Server {
 
         println!("{}\n", BANNER);
 
-        #[cfg(not(debug_assertions))]
-        tokio::spawn(async move {
-            if let Err(err) = crate::update::check_for_updates().await {
-                log_debug!("update check failed: {err}");
-            }
-        });
 
         let start = std::time::Instant::now();
 
@@ -106,22 +95,15 @@ impl Server {
 
         log_success!("ready in {}ms", start.elapsed().as_millis());
 
-        loop {
-            let (stream, _peer) = listener.accept().await?;
-            let app = app.clone();
+        #[cfg(not(debug_assertions))]
+        tokio::spawn(async move {
+            if let Err(err) = crate::update::check_for_updates().await {
+                crate::log_debug!("update check failed: {err}");
+            }
+        });
 
-            tokio::spawn(async move {
-                let io = TokioIo::new(stream);
-                let svc = service_fn(move |req: Request<Incoming>| {
-                    let mut app = app.clone();
-                    async move { app.call(req).await }
-                });
-
-                if let Err(err) = http1::Builder::new().serve_connection(io, svc).await {
-                    log_warn!("connection error: {err}");
-                }
-            });
-        }
+        axum::serve(listener, app).await?;
+        Ok(())
     }
 }
 

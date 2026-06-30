@@ -7,12 +7,12 @@ edition.workspace = true
 clap.workspace = true
 anyhow.workspace = true
 axum.workspace = true
-tokio = { workspace = true, features = ["rt", "net", "time", "io-util", "macros"] }
-hyper = { workspace = true, features = ["http1", "server", "client"] }
-hyper-util = { workspace = true, features = ["tokio", "client-legacy", "http1"] }
-tower-service.workspace = true
-utoipa = { workspace = true, optional = true }
-utoipa-swagger-ui = { workspace = true, optional = true }
+tokio = { version = "1", default-features = false, features = ["rt", "net", "time", "io-util", "macros"] }
+# only used by the debug Vite proxy (proxy.rs #[cfg(debug_assertions)])
+hyper = { version = "1.0", default-features = false, features = ["http1", "client"] }
+hyper-util = { version = "0.1", default-features = false, features = ["tokio", "client-legacy", "http1"] }
+utoipa = { version = "5", optional = true }
+utoipa-swagger-ui = { version = "8", default-features = false, features = ["axum"], optional = true }
 bytes.workspace = true
 http-body-util.workspace = true
 rust-embed = { version = "8.11", default-features = false }

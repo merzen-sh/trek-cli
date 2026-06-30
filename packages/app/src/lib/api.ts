@@ -19,7 +19,11 @@ export async function apiFetch(url: string, init?: RequestInit): Promise<Respons
   const headers = new Headers(init?.headers);
   headers.set("X-Auth-Pin", pin);
   const res = await fetch(url, { ...init, headers });
-  if (res.status === 401) {
+  // Only treat 401 as "wrong local pin" for local API endpoints.
+  // External proxy 401s (e.g. upstream session expired) are a different auth layer
+  // and must not clear the pin or cause a redirect loop.
+  const isExternal = url.startsWith("/external/");
+  if (res.status === 401 && !isExternal) {
     clearPin();
     window.location.href = "/";
   }
