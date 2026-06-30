@@ -4,17 +4,17 @@ use axum::http::{HeaderMap, StatusCode};
 use axum::response::{IntoResponse, Response};
 use bytes::Bytes;
 use http_body_util::BodyExt;
-use http_body_util::Full;
-use hyper_util::client::legacy::Client;
-use hyper_util::client::legacy::connect::HttpConnector;
-use hyper_util::rt::TokioExecutor;
+use reqwest::Client;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 use std::sync::Mutex;
 use std::time::Instant;
 
-static CLIENT: LazyLock<Client<HttpConnector, Full<Bytes>>> =
-    LazyLock::new(|| Client::builder(TokioExecutor::new()).build_http());
+static CLIENT: LazyLock<Client> = LazyLock::new(|| {
+    Client::builder()
+        .build()
+        .expect("failed to build reqwest client")
+});
 
 struct CacheEntry {
     status: StatusCode,
@@ -39,13 +39,7 @@ pub async fn handler(req: Request) -> Response {
         .unwrap_or_default();
     let cache_key = format!("{base}{upstream_path}{query}");
 
-    let url: hyper::Uri = match format!("{base}{upstream_path}{query}").parse() {
-        Ok(uri) => uri,
-        Err(e) => {
-            log_warn!("invalid api upstream uri: {e}");
-            return (StatusCode::BAD_GATEWAY, "invalid upstream url format").into_response();
-        }
-    };
+    let url = format!("{base}{upstream_path}{query}");
 
     let is_get = parts.method == "GET";
     if is_get {
@@ -79,45 +73,64 @@ pub async fn handler(req: Request) -> Response {
                 | "proxy-authorization"
                 | "proxy-authenticate"
                 | "keep-alive"
+                | "cookie" // we inject our own session cookie below
         )
     };
 
-    let mut req_builder = Request::builder().method(parts.method).uri(url);
+    let session_cookie = crate::config::Config::load()
+        .ok()
+        .and_then(|c| c.session_id)
+        .map(|id| format!("session={id}"));
+
+    let method = match reqwest::Method::from_bytes(parts.method.as_str().as_bytes()) {
+        Ok(m) => m,
+        Err(e) => {
+            log_warn!("invalid http method: {e}");
+            return (StatusCode::BAD_REQUEST, "invalid http method").into_response();
+        }
+    };
+
+    let mut req_builder = CLIENT.request(method, &url);
     for (key, value) in parts.headers.iter() {
         if !is_hop_header(key.as_str()) {
             req_builder = req_builder.header(key, value);
         }
     }
-    let req = req_builder.body(Full::new(body_bytes)).unwrap();
+    if let Some(cookie) = session_cookie {
+        req_builder = req_builder.header(reqwest::header::COOKIE, cookie);
+    }
+    req_builder = req_builder.body(body_bytes);
 
-    match CLIENT.request(req).await {
+    match req_builder.send().await {
         Ok(resp) => {
-            let (resp_parts, resp_body) = resp.into_parts();
-            let body = match resp_body.collect().await {
-                Ok(collected) => collected.to_bytes(),
+            let status =
+                StatusCode::from_u16(resp.status().as_u16()).unwrap_or(StatusCode::BAD_GATEWAY);
+            let mut headers = axum::http::HeaderMap::new();
+            for (key, value) in resp.headers().iter() {
+                if !is_hop_header(key.as_str()) {
+                    headers.insert(key.clone(), value.clone());
+                }
+            }
+            let body = match resp.bytes().await {
+                Ok(b) => b,
                 Err(e) => {
                     log_warn!("failed to read upstream response body: {e}");
                     return (StatusCode::BAD_GATEWAY, "upstream read error").into_response();
                 }
             };
-            let mut headers = axum::http::HeaderMap::new();
-            for (key, value) in resp_parts.headers.iter() {
-                if !is_hop_header(key.as_str()) {
-                    headers.insert(key.clone(), value.clone());
-                }
-            }
-            if is_get && resp_parts.status.is_success() {
+
+            if is_get && status.is_success() {
                 CACHE.lock().unwrap().insert(
                     cache_key,
                     CacheEntry {
-                        status: resp_parts.status,
+                        status,
                         headers: headers.clone(),
                         body: body.clone(),
                         expires: Instant::now() + std::time::Duration::from_secs(120),
                     },
                 );
             }
-            (resp_parts.status, headers, body).into_response()
+            (status, headers, body).into_response()
         }
         Err(e) => {
             log_warn!("api proxy error: {e}");
