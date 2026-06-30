@@ -13,7 +13,7 @@ $BinaryName = "trek"
 $Target = "x86_64-pc-windows-msvc"
 $ArchiveName = "$BinaryName-$Target.zip"
 $BinaryTarget = "$BinaryName-$Target.exe"
-$DefaultDir = Join-Path $env:USERPROFILE "trek" "bin"
+$DefaultDir = Join-Path $env:USERPROFILE "trek\bin"
 $InstallDir = if ($Dir) { $Dir } else { $DefaultDir }
 
 function Write-Info  { Write-Host "  [INFO] $args" -ForegroundColor Blue }
