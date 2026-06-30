@@ -140,7 +140,15 @@ jobs:
     runs-on: ${{ matrix.settings.os }}
 
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout (Release)
+        if: ${{ !inputs.dryRun }}
+        uses: actions/checkout@v6
+        with:
+          ref: release/v${{ needs.bump-version.outputs.version }}
+
+      - name: Checkout (Dry Run)
+        if: ${{ inputs.dryRun }}
+        uses: actions/checkout@v6
 
       - name: Download app artifact
         uses: actions/download-artifact@v7
