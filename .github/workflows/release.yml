@@ -176,10 +176,15 @@ jobs:
     needs: [build-rust, bump-version]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout (Release)
+        if: ${{ !inputs.dryRun }}
         uses: actions/checkout@v6
         with:
-          ref: ${{ inputs.dryRun && format('release/v{0}', needs.bump-version.outputs.version) }}
+          ref: release/v${{ needs.bump-version.outputs.version }}
+
+      - name: Checkout (Dry Run)
+        if: ${{ inputs.dryRun }}
+        uses: actions/checkout@v6
 
       - name: Download artifacts
         uses: actions/download-artifact@v7
