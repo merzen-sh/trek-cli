@@ -160,12 +160,12 @@ jobs:
       - name: Binary rename
         run: |
           mv target/${{ matrix.settings.target }}/release/trek${{ matrix.settings.ext }} target/${{ matrix.settings.target }}/release/trek-${{ matrix.settings.target }}${{ matrix.settings.ext }}
-      
+
       - name: copy binary to dist folder
         run: |
           mkdir -p ./dist
           cp target/${{ matrix.settings.target }}/release/trek-${{ matrix.settings.target }}${{ matrix.settings.ext }} ./dist/trek-${{ matrix.settings.target }}${{ matrix.settings.ext }}
-      
+
       - name: upload trek-cli
         uses: actions/upload-artifact@v7
         with:
