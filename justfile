@@ -27,6 +27,7 @@ api-types:
     (cd packages/api-types && pnpm run generate-api-types)
     kill $SERVER_PID 2>/dev/null || true
     wait $SERVER_PID 2>/dev/null || true
+    just fmt
 
 [working-directory("./packages/app")]
 build-app:
