@@ -2,6 +2,29 @@
 
 ### 🚀 Features
 
+- Add cross-platform installation scripts
+- Add Windows PowerShell installer
+- Implement PIN-based server authentication and secure dashboard access flow
+
+### 🐛 Bug Fixes
+
+- Use backslash path separator in install.ps1
+
+### 💼 Other
+
+- V0.1.0 (#6)
+
+### 🚜 Refactor
+
+- Migrate proxy server to reqwest
+
+### ⚙️ Miscellaneous Tasks
+
+- Update dependencies and prevent external 401 errors from triggering local pin clearing
+## [0.1.0] - 2026-06-30
+
+### 🚀 Features
+
 - Implement multi-platform native binary distribution
 - Add release workflow automation
 - Automate release process with automated changelogs, binary packaging, checksum generation, and GitHub releases
