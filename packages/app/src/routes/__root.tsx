@@ -4,30 +4,7 @@ import { useAppSetting } from "../lib/use-app-setting";
 import { Navbar } from "../components/navbar";
 import { Sidebar } from "../components/sidebar";
 import { PinAuth } from "../components/pin-auth";
-
-function resolveTheme(theme: "light" | "dark" | "system"): "light" | "dark" {
-  if (theme === "system") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  }
-  return theme;
-}
-
-function applyTheme(resolved: "light" | "dark") {
-  const root = document.documentElement;
-  root.classList.remove("light", "dark");
-  root.classList.add(resolved);
-}
-
-function applyThemeSmooth(resolved: "light" | "dark") {
-  const root = document.documentElement;
-  root.classList.add("disable-transition");
-  applyTheme(resolved);
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      root.classList.remove("disable-transition");
-    });
-  });
-}
+import { resolveTheme, applyThemeSmooth } from "../lib/theme-utils";
 
 export function RootLayout() {
   const theme = useAppSetting((s) => s.theme);

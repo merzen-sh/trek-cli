@@ -5,17 +5,7 @@ import { getScriptsQuery } from "../data/getScripts/query";
 import { getOrdersQuery } from "../data/getOrders/query";
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from "ui";
 import { Download, Settings } from "lucide-react";
-
-function fieldLabel(key: string): string {
-  return key
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2")
-    .replace(/_/g, " ");
-}
-
-function isFieldVisible(key: string): boolean {
-  return !["Version", "Author", "Description"].includes(key);
-}
+import { fieldLabel, isFieldVisible } from "../lib/labels";
 
 export function HomePage() {
   const activeScript = useAppSetting((s) => s.activeScript);

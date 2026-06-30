@@ -1,3 +1,14 @@
+export function fieldLabel(key: string): string {
+  return key
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2")
+    .replace(/_/g, " ");
+}
+
+export function isFieldVisible(key: string): boolean {
+  return !["Version", "Author", "Description"].includes(key);
+}
+
 export const LABEL_TH: Record<string, string> = {
   "--background": "พื้นหลังหลักของหน้าเว็บ",
   "--foreground": "สีตัวอักษรหลัก",

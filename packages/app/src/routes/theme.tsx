@@ -1,226 +1,16 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, Input, ColorPicker } from "ui";
-import { ShadowPicker } from "react-shadow-picker";
-import { Copy, Check, RotateCcw, Sun, Loader2, ChevronRight, ChevronDown } from "lucide-react";
+import { Button } from "ui";
+import { Copy, Check, RotateCcw, Sun, Loader2 } from "lucide-react";
 import { useAppSetting } from "../lib/use-app-setting";
 import { getThemeSchemaQuery } from "../data/getThemeSchema/query";
 import { getThemeQuery } from "../data/getTheme/query";
 import { useSaveTheme } from "../data/saveTheme/mutation";
 import { jsonSchemaToZod } from "../lib/json-schema-to-zod";
+import { buildThemeDefaults, groupKeyToCssVar } from "../lib/theme-utils";
+import { ThemeGroupSection } from "../components/theme-group-section";
 import { JsonHighlight } from "../components/json-highlight";
-
-interface SchemaProp {
-  type?: string;
-  description?: string;
-  default?: unknown;
-  pattern?: string;
-  minimum?: number;
-  maximum?: number;
-  ui_type?: {
-    component: string;
-    format?: string;
-  };
-}
-
-interface SchemaGroup {
-  type: string;
-  description?: string;
-  properties: Record<string, SchemaProp>;
-  required?: string[];
-}
-
-function buildGroupDefaults(properties: Record<string, SchemaProp>): Record<string, unknown> {
-  const defaults: Record<string, unknown> = {};
-  for (const [key, prop] of Object.entries(properties)) {
-    if (prop.default !== undefined) {
-      defaults[key] = prop.default;
-    } else if (prop.type === "number") {
-      defaults[key] = prop.minimum ?? 0;
-    } else {
-      defaults[key] = "";
-    }
-  }
-  return defaults;
-}
-
-function buildDefaults(
-  groups: Record<string, SchemaGroup>,
-): Record<string, Record<string, unknown>> {
-  const defaults: Record<string, Record<string, unknown>> = {};
-  for (const [group, schema] of Object.entries(groups)) {
-    defaults[group] = buildGroupDefaults(schema.properties);
-  }
-  return defaults;
-}
-
-function groupKeyToCssVar(group: string, key: string): string {
-  return `--${group}-${key}`.replace(/_/g, "-");
-}
-
-const GROUP_LABELS: Record<string, string> = {
-  colors: "Core Colors",
-  charts: "Chart Colors",
-  sidebar: "Sidebar",
-  layout: "Typography & Layout",
-  shadows: "Shadows",
-};
-
-function ThemeGroupSection({
-  group,
-  schema,
-  values,
-  onChange,
-  openShadows,
-  onToggleShadow,
-}: {
-  group: string;
-  schema: SchemaGroup;
-  values: Record<string, unknown>;
-  onChange: (group: string, key: string, val: unknown) => void;
-  openShadows: Set<string>;
-  onToggleShadow: (key: string) => void;
-}) {
-  return (
-    <fieldset className="rounded-md border p-4 space-y-3">
-      <legend className="text-xs font-semibold text-muted-foreground px-1">
-        {GROUP_LABELS[group] ?? group}
-        {schema.description && (
-          <span className="ml-2 text-muted-foreground/50 font-normal">— {schema.description}</span>
-        )}
-      </legend>
-      <div className="space-y-1">
-        {Object.entries(schema.properties).map(([key, prop]) => {
-          const val = values[key];
-          const cssVar = groupKeyToCssVar(group, key);
-
-          if (prop.ui_type?.component === "shadow-picker") {
-            const isOpen = openShadows.has(key);
-            return (
-              <div
-                key={key}
-                className="group rounded-md border border-border/60 bg-card/30 text-sm transition-colors hover:bg-card/60"
-              >
-                <button
-                  type="button"
-                  onClick={() => onToggleShadow(key)}
-                  className="flex w-full items-center gap-3 px-3 py-2"
-                >
-                  <div className="w-44 shrink-0 text-left">
-                    <code className="block truncate text-xs font-medium text-foreground/70">
-                      {cssVar}
-                    </code>
-                    <span className="block truncate text-[10px] text-muted-foreground/50 leading-tight">
-                      {prop.description}
-                    </span>
-                  </div>
-                  <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground/70">
-                    Shadow
-                  </span>
-                  <div
-                    className="ml-auto h-4 w-12 rounded border"
-                    style={{ boxShadow: String(val ?? "none") }}
-                  />
-                  {isOpen ? (
-                    <ChevronDown className="h-3 w-3 shrink-0 text-muted-foreground" />
-                  ) : (
-                    <ChevronRight className="h-3 w-3 shrink-0 text-muted-foreground" />
-                  )}
-                </button>
-                {isOpen && (
-                  <div className="border-t px-3 py-3">
-                    <ShadowPicker
-                      value={String(val ?? "0px 0px 0px 0px #000000")}
-                      onChange={(v) => onChange(group, key, v)}
-                    />
-                  </div>
-                )}
-              </div>
-            );
-          }
-
-          if (
-            prop.ui_type?.component === "color-picker" ||
-            (prop.pattern && prop.pattern.includes("#"))
-          ) {
-            const strVal = String(val ?? "#000000");
-            const hexMatch = strVal.match(/^#([0-9a-f]{3,6})$/i);
-            const hexPreview = hexMatch
-              ? (() => {
-                  let h = hexMatch[1];
-                  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
-                  return `#${h}`;
-                })()
-              : "#000000";
-            return (
-              <div
-                key={key}
-                className="group flex items-center gap-3 rounded-md border border-border/60 bg-card/30 px-3 py-2 text-sm transition-colors hover:bg-card/60"
-              >
-                <div className="w-44 shrink-0">
-                  <code className="block truncate text-xs font-medium text-foreground/70">
-                    {cssVar}
-                  </code>
-                  <span className="block truncate text-[10px] text-muted-foreground/50 leading-tight">
-                    {prop.description}
-                  </span>
-                </div>
-                <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground/70">
-                  Color
-                </span>
-                <div className="flex flex-1 items-center gap-1">
-                  <ColorPicker
-                    raw={strVal}
-                    hexPreview={hexPreview}
-                    onRawChange={(v) => onChange(group, key, v)}
-                    onHexChange={(v) => onChange(group, key, v)}
-                  />
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <div
-              key={key}
-              className="group flex items-center gap-3 rounded-md border border-border/60 bg-card/30 px-3 py-2 text-sm transition-colors hover:bg-card/60"
-            >
-              <div className="w-44 shrink-0">
-                <code className="block truncate text-xs font-medium text-foreground/70">
-                  {cssVar}
-                </code>
-                <span className="block truncate text-[10px] text-muted-foreground/50 leading-tight">
-                  {prop.description}
-                </span>
-              </div>
-              <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground/70">
-                {prop.type === "number" ? "Number" : "String"}
-              </span>
-              <div className="flex flex-1 items-center gap-1">
-                <Input
-                  variant="mono"
-                  size="sm"
-                  type={prop.type === "number" ? "number" : "text"}
-                  step={prop.type === "number" ? "any" : undefined}
-                  min={prop.minimum}
-                  max={prop.maximum}
-                  value={String(val ?? "")}
-                  onChange={(e) =>
-                    onChange(
-                      group,
-                      key,
-                      prop.type === "number" ? parseFloat(e.target.value) || 0 : e.target.value,
-                    )
-                  }
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </fieldset>
-  );
-}
+import type { SchemaGroup } from "../types/config";
 
 export function ThemeEditorPage() {
   const activeScript = useAppSetting((s) => s.activeScript);
@@ -252,7 +42,7 @@ export function ThemeEditorPage() {
 
   useEffect(() => {
     if (schema) {
-      const baseDefaults = buildDefaults(groups);
+      const baseDefaults = buildThemeDefaults(groups);
       if (theme) {
         const merged: Record<string, Record<string, unknown>> = {};
         for (const group of Object.keys(baseDefaults)) {
@@ -286,7 +76,7 @@ export function ThemeEditorPage() {
 
   const handleReset = useCallback(() => {
     if (schema) {
-      const baseDefaults = buildDefaults(groups);
+      const baseDefaults = buildThemeDefaults(groups);
       if (theme) {
         const merged: Record<string, Record<string, unknown>> = {};
         for (const group of Object.keys(baseDefaults)) {
