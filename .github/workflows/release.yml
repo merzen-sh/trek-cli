@@ -163,7 +163,7 @@ jobs:
           targets: ${{ matrix.settings.target }}
 
       - name: Build rust
-        run: cargo build --target ${{ matrix.settings.target }} -p trek --release
+        run: cargo build --target ${{ matrix.settings.target }} -p trek --release --features release-embed
 
       - name: Binary rename
         run: |
