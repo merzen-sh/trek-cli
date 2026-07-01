@@ -14,6 +14,7 @@ export interface SchemaProp {
   items?: SchemaProp;
   additionalProperties?: boolean;
 
+  system?: boolean;
   ui_permissions?: {
     add: boolean;
     delete: boolean;

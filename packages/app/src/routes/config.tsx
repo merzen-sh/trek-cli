@@ -17,7 +17,7 @@ import { getConfigSchemaQuery } from "../data/getConfigSchema/query";
 import { getConfigQuery } from "../data/getConfig/query";
 import { useSaveConfig } from "../data/saveConfig/mutation";
 import { jsonSchemaToZod } from "../lib/json-schema-to-zod";
-import { flattenSchemaPaths, buildDefaults } from "../lib/config-utils";
+import { flattenSchemaPaths, buildDefaults, stripSystemFields } from "../lib/config-utils";
 import { scrollToElement } from "../lib/dom-utils";
 import { ObjectFields } from "../components/object-fields";
 import { JsonHighlight } from "../components/json-highlight";
@@ -51,16 +51,23 @@ export function ConfigEditorPage() {
   const properties = (schema?.properties as Record<string, SchemaProp> | undefined) ?? {};
   const required = (schema?.required as string[] | undefined) ?? [];
 
+  const [values, setValues] = useState<Record<string, unknown>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [saved, setSaved] = useState(false);
+
+  const noticeProp = properties["notice"];
+  const noticeMessage = noticeProp?.system
+    ? (noticeProp.default as string) ?? ""
+    : "";
+
+  const previewValues = useMemo(() => stripSystemFields(properties, values), [properties, values]);
+
   const allNavItems = useMemo(() => flattenSchemaPaths(properties), [properties]);
 
   const filteredNavItems = useMemo(() => {
     if (!searchTerm.trim()) return allNavItems;
     return allNavItems.filter((item) => item.path.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [allNavItems, searchTerm]);
-
-  const [values, setValues] = useState<Record<string, unknown>>({});
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (schema) {
@@ -105,7 +112,7 @@ export function ConfigEditorPage() {
       return;
     }
     setErrors({});
-    saveMutation.mutate(result.data as Record<string, unknown>, {
+    saveMutation.mutate(stripSystemFields(properties, result.data as Record<string, unknown>), {
       onSuccess: () => {
         setSaved(true);
         queryClient.invalidateQueries({ queryKey: getConfigQuery(activeScript ?? "").queryKey });
@@ -114,7 +121,7 @@ export function ConfigEditorPage() {
   }
 
   const handleCopyJson = useCallback(async () => {
-    await navigator.clipboard.writeText(JSON.stringify(values, null, 2));
+    await navigator.clipboard.writeText(JSON.stringify(previewValues, null, 2));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [values]);
@@ -215,6 +222,12 @@ export function ConfigEditorPage() {
         </div>
       )}
 
+      {noticeMessage && (
+        <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-2 text-xs text-amber-700 dark:text-amber-400">
+          {noticeMessage}
+        </div>
+      )}
+
       <div className="flex flex-1 overflow-hidden">
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex-1 overflow-auto p-6">
@@ -248,7 +261,7 @@ export function ConfigEditorPage() {
             <div className="flex items-center gap-2">
               <span className="text-[10px] text-muted-foreground/50">
                 {previewTab === "json" &&
-                  `${JSON.stringify(values, null, 2).split("\n").length} lines`}
+                  `${JSON.stringify(previewValues, null, 2).split("\n").length} lines`}
                 {previewTab === "tree" && `${filteredNavItems.length} keys`}
               </span>
               {previewTab === "json" && (
@@ -341,7 +354,7 @@ export function ConfigEditorPage() {
             </div>
           ) : (
             <JsonHighlight
-              data={values}
+              data={previewValues}
               className="flex-1 overflow-auto p-4 text-[11px] leading-relaxed"
             />
           )}

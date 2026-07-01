@@ -41,6 +41,7 @@ export function buildGroupDefaults(
 ): Record<string, unknown> {
   const defaults: Record<string, unknown> = {};
   for (const [key, prop] of Object.entries(properties)) {
+    if (prop.system) continue;
     if (prop.default !== undefined) {
       defaults[key] = prop.default;
     } else if (prop.type === "number") {

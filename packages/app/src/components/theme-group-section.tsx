@@ -29,6 +29,7 @@ export function ThemeGroupSection({
       </legend>
       <div className="space-y-1">
         {Object.entries(schema.properties).map(([key, prop]) => {
+          if (prop.system) return null;
           const val = values[key];
           const cssVar = groupKeyToCssVar(group, key);
 

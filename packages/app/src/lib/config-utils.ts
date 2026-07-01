@@ -7,6 +7,7 @@ export function flattenSchemaPaths(
   let items: Array<{ path: string; label: string; type: string }> = [];
 
   for (const [key, prop] of Object.entries(properties)) {
+    if (prop.system) continue;
     const currentPath = prefix ? `${prefix}.${key}` : key;
     items.push({
       path: currentPath,
@@ -42,12 +43,36 @@ export function buildItemDefaults(itemsSchema: SchemaProp): Record<string, unkno
   return item;
 }
 
+export function stripSystemFields(
+  properties: Record<string, SchemaProp>,
+  data: Record<string, unknown>,
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(data)) {
+    const prop = properties[key];
+    if (prop?.system) continue;
+    if (
+      typeof value === "object" &&
+      value !== null &&
+      !Array.isArray(value) &&
+      prop?.type === "object" &&
+      prop?.properties
+    ) {
+      result[key] = stripSystemFields(prop.properties, value as Record<string, unknown>);
+    } else {
+      result[key] = value;
+    }
+  }
+  return result;
+}
+
 export function buildDefaults(
   properties: Record<string, SchemaProp>,
   _required: string[],
 ): Record<string, unknown> {
   const defaults: Record<string, unknown> = {};
   for (const [key, prop] of Object.entries(properties)) {
+    if (prop.system) continue;
     if (prop.default !== undefined) defaults[key] = prop.default;
     else if (prop.ui_type?.component === "color-picker")
       defaults[key] = { r: 255, g: 255, b: 255, a: 1 };

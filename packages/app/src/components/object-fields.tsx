@@ -24,6 +24,7 @@ function ObjectFieldsInner({
   return (
     <div className="space-y-4">
       {Object.entries(properties).map(([key, prop]) => {
+        if (prop.system) return null;
         const childPath = prefix ? `${prefix}.${key}` : key;
         const childError = errors[childPath];
 
