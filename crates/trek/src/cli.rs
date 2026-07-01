@@ -1,5 +1,5 @@
 use crate::server::run_server;
-use crate::{config::Config, login, scripts::Scripts};
+use crate::{config::Config, login, scripts};
 use crate::{log_error, log_success};
 use anyhow::Result;
 use clap::{Parser, Subcommand};
@@ -76,7 +76,7 @@ pub fn run() -> Result<()> {
         },
         Some(Commands::Scripts { action }) => match action {
             ScriptsCommands::List => {
-                let scripts = Scripts::load()?;
+                let scripts = scripts::load_scripts()?;
                 if scripts.scripts.is_empty() {
                     log_error!("no scripts found in workspace");
                 } else {

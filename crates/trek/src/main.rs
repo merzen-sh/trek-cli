@@ -1,4 +1,5 @@
 mod api;
+mod banner;
 mod cli;
 mod config;
 mod log;

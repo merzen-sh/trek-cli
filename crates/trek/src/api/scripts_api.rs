@@ -19,7 +19,7 @@ use serde_json::Value;
     )
 )]
 pub async fn list() -> Response {
-    match crate::scripts::Scripts::load() {
+    match crate::scripts::load_scripts() {
         Ok(scripts) => Json(scripts.scripts).into_response(),
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
     }
@@ -42,7 +42,7 @@ pub async fn list() -> Response {
     )
 )]
 pub async fn get_by_name(Path(name): Path<String>) -> Response {
-    let scripts = match crate::scripts::Scripts::load() {
+    let scripts = match crate::scripts::load_scripts() {
         Ok(s) => s.scripts,
         Err(e) => {
             return (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response();

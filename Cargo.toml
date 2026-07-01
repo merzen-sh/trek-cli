@@ -1,6 +1,11 @@
 [workspace]
 resolver = "2"
-members = ["./crates/trek", "./crates/trek-wasm", "./crates/trek-fxmanifest"]
+members = [
+  "./crates/trek",
+  "./crates/trek-scripts",
+  "./crates/trek-wasm",
+  "./crates/trek-fxmanifest",
+]
 
 [workspace.package]
 version = "0.1.2"
@@ -21,7 +26,9 @@ anyhow = "1.0"
 axum = { version = "0.7", default-features = false, features = ["json", "tokio", "http1"] }
 bytes = "1"
 http-body-util = "0.1"
+colorgrad = "0.8"
 trek-fxmanifest = { path = "crates/trek-fxmanifest" }
+trek-scripts = { path = "crates/trek-scripts" }
 
 [workspace.lints]
 rust = {}

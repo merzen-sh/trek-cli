@@ -60,10 +60,7 @@ pub async fn handler(req: Request) -> impl IntoResponse {
         return StatusCode::UNAUTHORIZED;
     }
     match crate::config::Config::load() {
-        Ok(cfg) if cfg.session_id.is_some() => {
-            log_success!("Authenticated with valid session");
-            StatusCode::OK
-        }
+        Ok(cfg) if cfg.session_id.is_some() => StatusCode::OK,
         _ => StatusCode::FORBIDDEN,
     }
 }
