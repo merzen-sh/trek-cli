@@ -93,7 +93,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "release: bump version to ${{ steps.version.outputs.version }}"
           title: "release: v${{ steps.version.outputs.version }}"
-          body-path: ./CHANGELOG.md
+          body: ${{ steps.git-cliff.outputs.content }}
           base: main
           branch: release/v${{ steps.version.outputs.version }}
 
