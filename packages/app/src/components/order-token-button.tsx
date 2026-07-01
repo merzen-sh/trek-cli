@@ -17,7 +17,7 @@ export function OrderTokenButton({
     setLoading(true);
     setError(false);
     try {
-      const res = await apiFetch("/external/api/orders", { credentials: "include" });
+      const res = await apiFetch("/external/api/orders");
       if (!res.ok) throw res;
       const json: {
         orders: { id: string; tokenKey: string; active: boolean }[];

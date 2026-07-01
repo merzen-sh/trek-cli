@@ -1,45 +1,8 @@
-use std::fs;
 use std::io::{self, Write};
-use std::path::Path;
-
-/// Load a `.env` file into the process environment.
-///
-/// Skips empty lines, lines starting with `#`, and lines without `=`.
-/// Does **not** overwrite variables that are already set (matches `dotenvy` behavior).
-pub fn load_dotenv() {
-    let _ = load_dotenv_from(".env");
-}
-
-fn load_dotenv_from(path: impl AsRef<Path>) -> io::Result<()> {
-    let content = fs::read_to_string(path.as_ref())?;
-    for line in content.lines() {
-        let line = line.trim();
-        if line.is_empty() || line.starts_with('#') {
-            continue;
-        }
-        if let Some((key, value)) = line.split_once('=') {
-            let key = key.trim();
-            let value = value.trim().trim_matches(|c| c == '"' || c == '\'');
-            // Only set if not already present — same as dotenvy::dotenv()
-            if std::env::var(key).is_err() {
-                // SAFETY: called single-threaded at program start before any
-                // threads are spawned (inside `main` → `log::init()` → `base_url()`).
-                unsafe { std::env::set_var(key, value) };
-            }
-        }
-    }
-    Ok(())
-}
-
-/// Read `BASE_URL` from the environment, loading `.env` first.
-/// Falls back to `"http://localhost:3000"` if unset.
-pub fn base_url() -> String {
-    load_dotenv();
-    std::env::var("BASE_URL").unwrap_or_else(|_| "http://localhost:3000".to_string())
-}
 
 #[derive(Copy, Clone, Debug)]
 #[doc(hidden)]
+#[allow(dead_code)]
 pub enum Level {
     Error,
     Warn,

@@ -33,7 +33,7 @@ api-types:
 build-app:
     @pnpm build
 
-release: build-app
+release:
     @cargo build -p trek --release --features release-embed
 
 check:

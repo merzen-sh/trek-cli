@@ -5,7 +5,7 @@ pub use crate::api::auth_api::{auth_pin, require_pin};
 
 #[cfg(all(not(feature = "swagger"), debug_assertions))]
 use crate::log_warn;
-use crate::{log_info, log_success};
+use crate::{banner, log_debug, log_info, log_success, update};
 use axum::middleware;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
@@ -15,7 +15,8 @@ pub struct Server {
 }
 
 pub fn base_url() -> String {
-    crate::log::base_url()
+    let url = "http://localhost:3000";
+    std::env::var("BASE_URL").unwrap_or_else(|_| url.to_string())
 }
 
 impl Server {
@@ -24,9 +25,13 @@ impl Server {
     }
 
     pub async fn run(self) -> anyhow::Result<()> {
+        let app = router::create().layer(middleware::from_fn(require_pin));
+        let addr = SocketAddr::from(([0, 0, 0, 0], self.port));
+        let listener = TcpListener::bind(addr).await?;
+
         let pin = auth_pin();
 
-        crate::banner::print_banner();
+        banner::print_banner();
 
         let start = std::time::Instant::now();
 
@@ -37,10 +42,6 @@ impl Server {
         };
         log_info!("dashboard: {host}?pin={pin}");
 
-        let app = router::create().layer(middleware::from_fn(require_pin));
-        let addr = SocketAddr::from(([0, 0, 0, 0], self.port));
-        let listener = TcpListener::bind(addr).await?;
-
         #[cfg(all(not(feature = "swagger"), debug_assertions))]
         log_warn!("!!! swagger disabled. Enable swagger feature for debug builds");
 
@@ -50,8 +51,8 @@ impl Server {
 
         #[cfg(not(debug_assertions))]
         tokio::spawn(async move {
-            if let Err(err) = crate::update::check_for_updates().await {
-                crate::log_debug!("update check failed: {err}");
+            if let Err(_err) = update::check_for_updates().await {
+                log_debug!("update check failed: {_err}");
             }
         });
 

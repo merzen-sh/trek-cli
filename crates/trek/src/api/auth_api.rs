@@ -1,4 +1,4 @@
-use crate::{log_error, log_success};
+use crate::{log_error};
 use axum::extract::Request;
 use axum::http::StatusCode;
 use axum::middleware;
