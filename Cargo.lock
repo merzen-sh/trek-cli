@@ -1889,7 +1889,6 @@ dependencies = [
  "serde_json",
  "tokio",
  "toml",
- "trek-fxmanifest",
  "trek-scripts",
  "utoipa",
  "utoipa-swagger-ui",
