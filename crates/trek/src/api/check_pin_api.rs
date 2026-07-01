@@ -29,8 +29,10 @@ pub struct CheckPinPayload {
 )]
 pub async fn handler(Json(payload): Json<CheckPinPayload>) -> impl IntoResponse {
     if payload.pin == crate::api::auth_api::auth_pin() {
+        crate::api::auth_api::reset_failed_attempts();
         (StatusCode::OK, Json(json!({ "status": "ok" })))
     } else {
+        crate::api::auth_api::report_wrong_pin();
         (
             StatusCode::UNAUTHORIZED,
             Json(json!({ "error": "invalid pin" })),
