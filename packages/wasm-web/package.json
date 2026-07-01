@@ -1,6 +1,6 @@
 {
   "name": "@trek-cli/wasm",
-  "version": "0.1.2",
+  "version": "0.1.3-canary.0",
   "private": true,
   "files": [
     "*.d.ts",

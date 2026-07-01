@@ -1,3 +1,25 @@
+## [0.1.3-canary.0] - 2026-07-01
+
+### 🚀 Features
+
+- Integrate OpenAPI client
+- Implement rate limiting and auto-exit for invalid PIN attempts
+- Implement system field filtering
+
+### 🚜 Refactor
+
+- Modularize configuration UI components
+- Modularized server routing logic
+- Extract script management logic into a new trek-scripts crate
+- Modularize server configuration
+
+### ⚙️ Miscellaneous Tasks
+
+- Enable tag fetching and full history
+- Run format
+- Enable release-embed feature
+- Run formatter after generating api types in justfile
+- Update release workflow to use generated git-cliff changelog content
 ## [0.1.2] - 2026-06-30
 
 ### 🐛 Bug Fixes
@@ -8,7 +30,6 @@
 
 - Update release workflow checkout logic
 - Swap version tags in workflow
-
 ## [0.1.1] - 2026-06-30
 
 ### 🚀 Features
@@ -28,7 +49,6 @@
 ### ⚙️ Miscellaneous Tasks
 
 - Update dependencies and prevent external 401 errors from triggering local pin clearing
-
 ## [0.1.0] - 2026-06-30
 
 ### 🚀 Features
