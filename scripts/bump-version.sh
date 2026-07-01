@@ -23,6 +23,7 @@ for manifest in "$ROOT_DIR"/crates/*/Cargo.toml; do
 done
 
 sed -i "s/\"version\": \".*\"/\"version\": \"$NEW_VERSION\"/" \
+  "$ROOT_DIR/package.json" \
   "$ROOT_DIR/packages/wasm-web/package.json" \
   "$ROOT_DIR/packages/app/package.json" \
   "$ROOT_DIR/packages/ui/package.json" \

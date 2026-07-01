@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node ../../scripts/inject-app-version.js",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -18,7 +18,9 @@
     "openapi-fetch": "^0.13.5",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-markdown": "^10.1.0",
     "react-shadow-picker": "^1.1.0",
+    "remark-gfm": "^4.0.1",
     "ui": "workspace:*",
     "zod": "^4.4.3",
     "zustand": "^5.0.13"

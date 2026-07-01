@@ -17,7 +17,12 @@ export function Navbar() {
         <ScriptDropdown />
       </div>
 
-      <ThemeSwitcher />
+      <div className="flex items-center gap-3">
+        <span className="text-xs font-mono text-muted-foreground">
+          v{window.__TREK_CLI__?.App?.version ?? "?"}
+        </span>
+        <ThemeSwitcher />
+      </div>
     </header>
   );
 }
