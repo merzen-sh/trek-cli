@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "ui";
-import { Copy, Check, RotateCcw, Sun, Loader2 } from "lucide-react";
+import { Check, RotateCcw, Sun, Loader2 } from "lucide-react";
 import { useAppSetting } from "../lib/use-app-setting";
 import { getThemeSchemaQuery } from "../data/getThemeSchema/query";
 import { getThemeQuery } from "../data/getTheme/query";
@@ -22,7 +22,6 @@ export function ThemeEditorPage() {
   const { data: theme, isLoading: themeLoading } = useQuery(getThemeQuery(activeScript ?? ""));
   const saveMutation = useSaveTheme(activeScript ?? "");
 
-  const [copied, setCopied] = useState(false);
   const [previewTab, setPreviewTab] = useState<"json" | "palette">("json");
   const [values, setValues] = useState<Record<string, Record<string, unknown>>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -105,12 +104,6 @@ export function ThemeEditorPage() {
       return next;
     });
   }, []);
-
-  const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(JSON.stringify(values, null, 2));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }, [values]);
 
   function handleSave() {
     if (!zodSchema) return;
@@ -224,10 +217,6 @@ export function ThemeEditorPage() {
               <Check className="mr-1 h-3 w-3" />
             )}
             {saveMutation.isPending ? "Saving..." : "Save"}
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleCopy}>
-            {copied ? <Check className="mr-1 h-3 w-3" /> : <Copy className="mr-1 h-3 w-3" />}
-            {copied ? "Copied!" : "Copy CSS"}
           </Button>
         </div>
       </div>
