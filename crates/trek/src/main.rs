@@ -9,8 +9,6 @@ mod server;
 mod update;
 
 fn main() -> anyhow::Result<()> {
-    log::init();
-
     cli::run()?;
 
     Ok(())

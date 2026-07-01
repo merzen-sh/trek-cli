@@ -44,11 +44,6 @@ pub fn log(level: Level, args: std::fmt::Arguments) {
     let _ = writeln!(stderr, "{color}[{tag}]{RESET} {args}");
 }
 
-/// Initialize the logger. Call once at program start.
-pub fn init() {
-    // Nothing to do — we write directly to stderr per-message.
-}
-
 /// Log an ERROR message to stderr.
 #[macro_export]
 macro_rules! log_error {

@@ -25,6 +25,8 @@ impl Server {
     }
 
     pub async fn run(self) -> anyhow::Result<()> {
+        let start = std::time::Instant::now();
+
         let app = router::create().layer(middleware::from_fn(require_pin));
         let addr = SocketAddr::from(([0, 0, 0, 0], self.port));
         let listener = TcpListener::bind(addr).await?;
@@ -33,13 +35,8 @@ impl Server {
 
         banner::print_banner();
 
-        let start = std::time::Instant::now();
+        let host = format!("http://localhost:{}", self.port);
 
-        let host = if self.port == 80 {
-            format!("http://localhost")
-        } else {
-            format!("http://localhost:{}", self.port)
-        };
         log_info!("dashboard: {host}?pin={pin}");
 
         #[cfg(all(not(feature = "swagger"), debug_assertions))]
