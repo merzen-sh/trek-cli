@@ -33,16 +33,19 @@ export function ChangelogPopup() {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleDismiss} />
       <div className="relative flex w-full max-w-2xl max-h-[80vh] flex-col overflow-hidden rounded-2xl border bg-background shadow-xl">
         <div className="flex items-center justify-between border-b px-6 py-4">
-          <h2 className="text-lg font-semibold">
-            What's New in v{appVersion}
-          </h2>
+          <h2 className="text-lg font-semibold">What's New in v{appVersion}</h2>
           <button
             onClick={handleDismiss}
             className="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             aria-label="Close"
           >
             <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>

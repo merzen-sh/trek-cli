@@ -33,7 +33,9 @@ export function ScriptDropdown() {
           "flex h-8 w-48 items-center justify-between rounded-md border border-input bg-background px-3 py-1 text-xs ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         )}
       >
-        <span className="truncate">{selected?.name ? `${selected.name} (${selected.version})` : "Select script..."}</span>
+        <span className="truncate">
+          {selected?.name ? `${selected.name} (${selected.version})` : "Select script..."}
+        </span>
         <ChevronDown
           className={cn("ml-2 h-3 w-3 shrink-0 transition-transform", open && "rotate-180")}
         />

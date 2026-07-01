@@ -47,7 +47,10 @@ impl Server {
 
         log_info!("listening on {addr}");
 
-        log_success!("ready in {}ms", start.elapsed().as_millis());
+        log_success!(
+            "ready in {:.2}ms",
+            start.elapsed().as_nanos() as f64 / 1_000_000.0
+        );
 
         #[cfg(not(debug_assertions))]
         tokio::spawn(async move {

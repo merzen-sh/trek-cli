@@ -3,9 +3,9 @@ use axum::extract::Request;
 use axum::http::StatusCode;
 use axum::middleware;
 use axum::response::{IntoResponse, Response};
-use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::LazyLock;
 use std::sync::Mutex;
+use std::sync::atomic::{AtomicU32, Ordering};
 
 static AUTH_PIN: LazyLock<Mutex<String>> = LazyLock::new(|| {
     let ns = std::time::SystemTime::now()

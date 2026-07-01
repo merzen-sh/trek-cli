@@ -56,9 +56,7 @@ export function ConfigEditorPage() {
   const [saved, setSaved] = useState(false);
 
   const noticeProp = properties["notice"];
-  const noticeMessage = noticeProp?.system
-    ? (noticeProp.default as string) ?? ""
-    : "";
+  const noticeMessage = noticeProp?.system ? ((noticeProp.default as string) ?? "") : "";
 
   const previewValues = useMemo(() => stripSystemFields(properties, values), [properties, values]);
 
