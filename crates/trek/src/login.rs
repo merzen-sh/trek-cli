@@ -102,7 +102,7 @@ async fn login_async() -> Result<()> {
         .unwrap_or("unknown")
         .to_string();
 
-    let mut config = crate::config::Config::load()?;
+    let mut config = trek_configuration::Config::load()?;
     config.session_id = Some(claim.session_id);
     config.user = Some(claim.user);
     config.save()?;

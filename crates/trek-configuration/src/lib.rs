@@ -1,4 +1,3 @@
-use crate::log_info;
 use anyhow::{Context, Result};
 use inquire::Text;
 use serde::{Deserialize, Serialize};
@@ -82,7 +81,7 @@ impl Config {
 
         self.workspace_dir = Some(name.clone());
         self.save()?;
-        log_info!("saved workspace_dir to {}", Self::path().display());
+        eprintln!("\x1b[36m[INFO]\x1b[0m saved workspace_dir to {}", Self::path().display());
         Ok(name)
     }
 

@@ -1,5 +1,6 @@
 use crate::server::run_server;
-use crate::{config::Config, login, scripts};
+use crate::{login, scripts};
+use trek_configuration::Config;
 use crate::{log_error, log_success};
 use anyhow::Result;
 use clap::{Parser, Subcommand};

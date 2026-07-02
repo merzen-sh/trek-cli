@@ -77,7 +77,7 @@ pub async fn handler(req: Request) -> Response {
         )
     };
 
-    let session_cookie = crate::config::Config::load()
+    let session_cookie = trek_configuration::Config::load()
         .ok()
         .and_then(|c| c.session_id)
         .map(|id| format!("session={id}"));

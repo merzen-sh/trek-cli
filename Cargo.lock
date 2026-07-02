@@ -1889,9 +1889,21 @@ dependencies = [
  "serde_json",
  "tokio",
  "toml",
+ "trek-configuration",
  "trek-scripts",
  "utoipa",
  "utoipa-swagger-ui",
+]
+
+[[package]]
+name = "trek-configuration"
+version = "0.2.0"
+dependencies = [
+ "anyhow",
+ "inquire",
+ "serde",
+ "serde_json",
+ "toml",
 ]
 
 [[package]]

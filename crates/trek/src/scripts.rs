@@ -1,4 +1,4 @@
-use crate::config::Config;
+use trek_configuration::Config;
 use anyhow::{Context, Result};
 pub use trek_scripts::Scripts;
 

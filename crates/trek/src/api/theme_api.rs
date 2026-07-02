@@ -16,7 +16,7 @@ fn prevent_traversal(name: &str) -> Result<PathBuf, Response> {
 }
 
 fn script_dir(name: &str) -> Result<PathBuf, Response> {
-    let config = crate::config::Config::load()
+    let config = trek_configuration::Config::load()
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response())?;
     let ws = config
         .workspace_path()

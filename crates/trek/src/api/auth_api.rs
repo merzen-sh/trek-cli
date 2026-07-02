@@ -79,7 +79,7 @@ pub async fn handler(req: Request) -> impl IntoResponse {
         return StatusCode::UNAUTHORIZED;
     }
     reset_failed_attempts();
-    match crate::config::Config::load() {
+    match trek_configuration::Config::load() {
         Ok(cfg) if cfg.session_id.is_some() => StatusCode::OK,
         _ => StatusCode::FORBIDDEN,
     }
