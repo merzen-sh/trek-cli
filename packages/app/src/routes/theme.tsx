@@ -47,7 +47,7 @@ export function ThemeEditorPage() {
         for (const group of Object.keys(baseDefaults)) {
           merged[group] = {
             ...baseDefaults[group],
-            ...((theme as Record<string, Record<string, unknown>>)[group] ?? {}),
+            ...(theme as Record<string, Record<string, unknown>>)[group],
           };
         }
         setValues(merged);
@@ -81,7 +81,7 @@ export function ThemeEditorPage() {
         for (const group of Object.keys(baseDefaults)) {
           merged[group] = {
             ...baseDefaults[group],
-            ...((theme as Record<string, Record<string, unknown>>)[group] ?? {}),
+            ...(theme as Record<string, Record<string, unknown>>)[group],
           };
         }
         setValues(merged);

@@ -1,3 +1,4 @@
+use crate::browser::open_browser;
 use crate::{log_success, server::base_url};
 use anyhow::{Context, Result};
 use serde::Deserialize;
@@ -47,25 +48,7 @@ async fn login_async() -> Result<()> {
     let code = &chal.code;
     let url = format!("{base}/cli-login?code={code}");
 
-    let mut cmd = if cfg!(target_os = "windows") {
-        let mut c = std::process::Command::new("cmd");
-        c.args(["/c", "start", &url]);
-        c
-    } else {
-        let mut c = std::process::Command::new("xdg-open");
-        c.arg(&url);
-        c
-    };
-    if cmd
-        .stdout(std::process::Stdio::null())
-        .stderr(std::process::Stdio::null())
-        .spawn()
-        .is_ok()
-    {
-        println!("Opened browser");
-    } else {
-        println!("Open this URL:\n{url}");
-    }
+    let _ = open_browser(&url);
 
     let mut tick = 0u32;
     let frameset = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];

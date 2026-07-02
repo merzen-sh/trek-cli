@@ -5,7 +5,7 @@ pub use crate::api::auth_api::{auth_pin, require_pin};
 
 #[cfg(all(not(feature = "swagger"), debug_assertions))]
 use crate::log_warn;
-use crate::{banner, log_debug, log_info, log_success, update};
+use crate::{banner, browser::open_browser, log_debug, log_info, log_success, update};
 use axum::middleware;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
@@ -36,8 +36,9 @@ impl Server {
         banner::print_banner();
 
         let host = format!("http://localhost:{}", self.port);
+        let url = format!("{}?pin={}", host, pin);
 
-        log_info!("dashboard: {host}?pin={pin}");
+        log_info!("dashboard: {}", url);
 
         #[cfg(all(not(feature = "swagger"), debug_assertions))]
         log_warn!("!!! swagger disabled. Enable swagger feature for debug builds");
@@ -48,6 +49,8 @@ impl Server {
             "ready in {:.2}ms",
             start.elapsed().as_nanos() as f64 / 1_000_000.0
         );
+
+        let _ = open_browser(&url);
 
         #[cfg(not(debug_assertions))]
         tokio::spawn(async move {

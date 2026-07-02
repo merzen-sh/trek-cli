@@ -1,5 +1,6 @@
 mod api;
 mod banner;
+mod browser;
 mod cli;
 mod config;
 mod log;
