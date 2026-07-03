@@ -22,7 +22,7 @@ static FAILED_ATTEMPTS: AtomicU32 = AtomicU32::new(0);
 pub fn report_wrong_pin() {
     let attempts = FAILED_ATTEMPTS.fetch_add(1, Ordering::SeqCst) + 1;
     log_error!("Invalid pin (attempt {attempts}/3)");
-    if attempts > 3 {
+    if attempts >= 3 {
         eprintln!("Too many invalid pin attempts — exiting");
         std::process::exit(1);
     }
