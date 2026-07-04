@@ -31,8 +31,6 @@ http-body-util.workspace = true
 rust-embed = { version = "8.11", default-features = false }
 serde = { workspace = true, features = ["derive"] }
 trek-configuration = { workspace = true }
-inquire.workspace = true
-toml.workspace = true
 reqwest = { version = "0.12", default-features = false, features = ["native-tls", "json"] }
 serde_json.workspace = true
 semver.workspace = true
