@@ -34,6 +34,7 @@ trek-configuration = { workspace = true }
 reqwest = { version = "0.12", default-features = false, features = ["native-tls", "json"] }
 serde_json.workspace = true
 semver.workspace = true
+trek-log = { workspace = true }
 trek-scripts = { workspace = true }
 
 [features]

@@ -1888,6 +1888,7 @@ dependencies = [
  "serde_json",
  "tokio",
  "trek-configuration",
+ "trek-log",
  "trek-scripts",
  "utoipa",
  "utoipa-swagger-ui",
@@ -1913,12 +1914,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "trek-log"
+version = "0.2.0"
+
+[[package]]
 name = "trek-scripts"
 version = "0.2.0"
 dependencies = [
  "anyhow",
  "serde",
  "trek-fxmanifest",
+ "trek-log",
 ]
 
 [[package]]

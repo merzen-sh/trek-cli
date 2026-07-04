@@ -7,3 +7,4 @@ edition.workspace = true
 anyhow.workspace = true
 serde = { workspace = true, features = ["derive"] }
 trek-fxmanifest = { workspace = true, features = ["serialize"] }
+trek-log = { workspace = true }

@@ -5,7 +5,7 @@ use axum::response::{IntoResponse, Response};
 #[cfg(debug_assertions)]
 mod inner {
     use super::*;
-    use crate::log_warn;
+    use trek_log::log_warn;
     use bytes::Bytes;
     use http_body_util::BodyExt;
     use http_body_util::Full;

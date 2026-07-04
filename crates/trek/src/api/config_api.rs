@@ -1,4 +1,4 @@
-use crate::log_success;
+use trek_log::log_success;
 use axum::Json;
 use axum::extract::{Path, Request};
 use axum::http::StatusCode;

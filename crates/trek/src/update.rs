@@ -1,5 +1,5 @@
 #[cfg(not(debug_assertions))]
-use crate::log_warn;
+use trek_log::log_warn;
 use semver::Version;
 
 #[cfg(not(debug_assertions))]

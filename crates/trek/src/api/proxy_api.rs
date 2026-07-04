@@ -1,4 +1,4 @@
-use crate::log_warn;
+use trek_log::log_warn;
 use axum::extract::Request;
 use axum::http::{HeaderMap, StatusCode};
 use axum::response::{IntoResponse, Response};

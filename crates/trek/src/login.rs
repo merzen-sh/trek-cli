@@ -1,5 +1,6 @@
 use crate::browser::open_browser;
-use crate::{log_success, server::base_url};
+use crate::server::base_url;
+use trek_log::log_success;
 use anyhow::{Context, Result};
 use serde::Deserialize;
 use std::io::{self, Write};

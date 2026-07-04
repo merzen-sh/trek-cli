@@ -30,6 +30,7 @@ Two workspaces sharing the root — **Cargo** (`crates/*`) and **pnpm** (`packag
 | crate                 | type   | purpose                                              |
 | --------------------- | ------ | ---------------------------------------------------- |
 | `trek`                | binary | CLI + axum HTTP server (reverse proxy, static files) |
+| `trek-log`            | rlib   | ANSI-colored stderr logging macros (`log_error!`, etc.) |
 | `trek-configuration`  | rlib   | TOML-based user config at `~/.config/trek/config.toml` |
 | `trek-scripts`        | rlib   | workspace fxmanifest.lua scanning and management     |
 | `trek-fxmanifest`     | rlib   | FiveM fxmanifest.lua parser (lexer → parser → AST)   |

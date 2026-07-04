@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
   "./crates/trek",
+  "./crates/trek-log",
   "./crates/trek-scripts",
   "./crates/trek-wasm",
   "./crates/trek-fxmanifest",
@@ -32,6 +33,7 @@ inquire = { version = "0.7", default-features = false, features = ["console"] }
 toml = { version = "0.8", default-features = false, features = ["parse", "display"] }
 trek-fxmanifest = { path = "crates/trek-fxmanifest" }
 trek-configuration = { path = "crates/trek-configuration" }
+trek-log = { path = "crates/trek-log" }
 trek-scripts = { path = "crates/trek-scripts" }
 
 [workspace.lints]
