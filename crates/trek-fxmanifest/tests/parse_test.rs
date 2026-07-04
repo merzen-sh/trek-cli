@@ -113,3 +113,85 @@ game "gta5"
     assert_eq!(manifest.fx_version, "cerulean");
     assert_eq!(manifest.games.len(), 1);
 }
+
+#[test]
+fn parse_with_windows_crlf_line_endings() {
+    let input = "fx_version 'cerulean'\r\ngame 'gta5'\r\nauthor 'Windows User'\r\nversion '1.0.0'\r\n";
+    let manifest = trek_fxmanifest::parse(input).unwrap();
+    assert_eq!(manifest.fx_version, "cerulean");
+    assert_eq!(manifest.games.len(), 1);
+    let author = manifest
+        .fields
+        .iter()
+        .find_map(|f| if let trek_fxmanifest::ast::Field::Author(a) = f { Some(a.as_str()) } else { None });
+    assert_eq!(author, Some("Windows User"));
+    let version = manifest
+        .fields
+        .iter()
+        .find_map(|f| if let trek_fxmanifest::ast::Field::Version(v) = f { Some(v.as_str()) } else { None });
+    assert_eq!(version, Some("1.0.0"));
+}
+
+#[test]
+fn parse_multiple_games_including_unknown() {
+    let input = r#"
+fx_version 'cerulean'
+game 'gta5'
+game 'rdr3'
+game 'custom_game'
+"#;
+    let manifest = trek_fxmanifest::parse(input).unwrap();
+    assert_eq!(manifest.games.len(), 3);
+    assert!(matches!(
+        manifest.games[0],
+        trek_fxmanifest::ast::Game::Gta5
+    ));
+    assert!(matches!(
+        manifest.games[1],
+        trek_fxmanifest::ast::Game::Rdr3
+    ));
+    assert!(matches!(
+        manifest.games[2],
+        trek_fxmanifest::ast::Game::Other(ref s) if s == "custom_game"
+    ));
+}
+
+#[test]
+fn parse_error_on_unterminated_string() {
+    let input = "fx_version 'cerulean";
+    let err = trek_fxmanifest::parse(input).unwrap_err();
+    let msg = err.to_string();
+    assert!(msg.contains("unterminated string"), "got: {msg}");
+}
+
+#[test]
+fn parse_error_on_unexpected_character() {
+    let input = "fx_version 'cerulean'\n@invalid";
+    let err = trek_fxmanifest::parse(input).unwrap_err();
+    let msg = err.to_string();
+    assert!(msg.contains("unexpected character"), "got: {msg}");
+}
+
+#[test]
+fn parse_error_on_duplicate_fx_version() {
+    let input = "fx_version 'cerulean'\nfx_version 'adamant'";
+    let err = trek_fxmanifest::parse(input).unwrap_err();
+    let msg = err.to_string();
+    assert!(msg.contains("duplicate fx_version"), "got: {msg}");
+}
+
+#[test]
+fn game_display_implementations() {
+    use trek_fxmanifest::ast::Game;
+    assert_eq!(Game::Gta5.to_string(), "gta5");
+    assert_eq!(Game::Rdr3.to_string(), "rdr3");
+    assert_eq!(Game::Other("custom".into()).to_string(), "custom");
+}
+
+#[test]
+fn parse_with_double_quotes_and_crlf() {
+    let input = "fx_version \"cerulean\"\r\ngame \"gta5\"\r\n";
+    let manifest = trek_fxmanifest::parse(input).unwrap();
+    assert_eq!(manifest.fx_version, "cerulean");
+    assert_eq!(manifest.games.len(), 1);
+}

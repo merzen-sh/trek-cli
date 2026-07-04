@@ -50,8 +50,39 @@ mod tests {
 
     #[test]
     fn test_version_comparison() {
-        let v1 = Version::parse("0.1.1").unwrap();
         let v0 = Version::parse("0.1.0").unwrap();
+        let v1 = Version::parse("0.1.1").unwrap();
+        let v2 = Version::parse("0.2.0").unwrap();
+        let v3 = Version::parse("1.0.0").unwrap();
+
         assert!(v1 > v0);
+        assert!(v2 > v1);
+        assert!(v3 > v2);
+        assert!(v0 < v1);
+        assert_eq!(v0, Version::parse("0.1.0").unwrap());
+    }
+
+    #[test]
+    fn version_prefix_stripping() {
+        let with_v = "v0.1.0".trim_start_matches('v');
+        let without_v = "0.1.0";
+        assert_eq!(
+            Version::parse(with_v).unwrap(),
+            Version::parse(without_v).unwrap(),
+        );
+    }
+
+    #[test]
+    fn pre_release_version_comparison() {
+        let stable = Version::parse("1.0.0").unwrap();
+        let rc = Version::parse("1.0.0-rc.1").unwrap();
+        let beta = Version::parse("1.0.0-beta.1").unwrap();
+        let alpha = Version::parse("1.0.0-alpha.1").unwrap();
+
+        assert!(stable > rc);
+        assert!(rc > beta);
+        assert!(beta > alpha);
+        assert!(alpha < beta);
+        assert!(alpha < stable);
     }
 }

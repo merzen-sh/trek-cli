@@ -84,3 +84,52 @@ macro_rules! log_debug {
         $crate::log::log($crate::log::Level::Debug, format_args!($($arg)*))
     };
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn level_tag_returns_expected_values() {
+        assert_eq!(Level::Error.tag(), "ERROR");
+        assert_eq!(Level::Warn.tag(), "WARN");
+        assert_eq!(Level::Info.tag(), "INFO");
+        assert_eq!(Level::Success.tag(), "SUCCESS");
+        assert_eq!(Level::Debug.tag(), "DEBUG");
+    }
+
+    #[test]
+    fn level_color_starts_with_ansi_escape() {
+        for level in &[
+            Level::Error,
+            Level::Warn,
+            Level::Info,
+            Level::Success,
+            Level::Debug,
+        ] {
+            assert!(
+                level.color().starts_with("\x1b["),
+                "level {level:?} color should start with ANSI escape",
+            );
+        }
+    }
+
+    #[test]
+    fn level_color_is_unique_per_level() {
+        let colors: Vec<&str> = vec![
+            Level::Error.color(),
+            Level::Warn.color(),
+            Level::Info.color(),
+            Level::Success.color(),
+            Level::Debug.color(),
+        ];
+        let mut sorted = colors.clone();
+        sorted.sort();
+        sorted.dedup();
+        assert_eq!(
+            sorted.len(),
+            colors.len(),
+            "each level should have a unique color"
+        );
+    }
+}

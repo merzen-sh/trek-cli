@@ -85,3 +85,147 @@ impl Scripts {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+    use std::path::{Path, PathBuf};
+
+    struct TempDir(PathBuf);
+
+    impl TempDir {
+        fn new(prefix: &str) -> Self {
+            let dir = std::env::temp_dir().join(format!("{}-{}", prefix, std::process::id()));
+            let _ = fs::remove_dir_all(&dir);
+            fs::create_dir_all(&dir).unwrap();
+            TempDir(dir)
+        }
+
+        fn path(&self) -> &Path {
+            &self.0
+        }
+    }
+
+    impl Drop for TempDir {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+
+    #[test]
+    fn load_scripts_finds_valid_scripts_in_directory() {
+        let temp = TempDir::new("trek-scripts-main");
+
+        let script_dir = temp.path().join("my-resource");
+        fs::create_dir_all(&script_dir).unwrap();
+        fs::write(
+            script_dir.join("fxmanifest.lua"),
+            r#"
+fx_version 'cerulean'
+game 'gta5'
+author 'Test Author'
+version '2.1.0'
+description 'A test script'
+
+client_script 'client.lua'
+server_script 'server.lua'
+"#,
+        )
+        .unwrap();
+
+        // Directory without fxmanifest.lua — skipped
+        fs::create_dir_all(temp.path().join("no-manifest")).unwrap();
+        // Plain file — skipped
+        fs::write(temp.path().join("file.txt"), b"not a dir").unwrap();
+
+        let scripts = Scripts::load_from(temp.path()).unwrap();
+        assert_eq!(scripts.scripts.len(), 1);
+
+        let s = &scripts.scripts[0];
+        assert_eq!(s.name, "my-resource");
+        assert_eq!(s.version.as_deref(), Some("2.1.0"));
+        assert_eq!(s.author.as_deref(), Some("Test Author"));
+        assert_eq!(s.description.as_deref(), Some("A test script"));
+        assert!(s.path.join("fxmanifest.lua").exists());
+        assert!(s.path.is_absolute());
+    }
+
+    #[test]
+    fn load_scripts_handles_crlf_line_endings() {
+        let temp = TempDir::new("trek-scripts-crlf");
+        let script_dir = temp.path().join("crlf-resource");
+        fs::create_dir_all(&script_dir).unwrap();
+        fs::write(
+            script_dir.join("fxmanifest.lua"),
+            "fx_version 'cerulean'\r\ngame 'gta5'\r\nauthor 'CRLF User'\r\nversion '1.0.0'\r\n",
+        )
+        .unwrap();
+
+        let scripts = Scripts::load_from(temp.path()).unwrap();
+        assert_eq!(scripts.scripts.len(), 1);
+        assert_eq!(scripts.scripts[0].name, "crlf-resource");
+        assert_eq!(scripts.scripts[0].author.as_deref(), Some("CRLF User"));
+        assert_eq!(scripts.scripts[0].version.as_deref(), Some("1.0.0"));
+    }
+
+    #[test]
+    fn load_scripts_returns_empty_for_empty_directory() {
+        let temp = TempDir::new("trek-scripts-empty");
+        let scripts = Scripts::load_from(temp.path()).unwrap();
+        assert!(scripts.scripts.is_empty());
+    }
+
+    #[test]
+    fn load_scripts_sorts_by_name() {
+        let temp = TempDir::new("trek-scripts-sort");
+
+        for name in ["z-script", "a-script", "m-script"] {
+            let dir = temp.path().join(name);
+            fs::create_dir_all(&dir).unwrap();
+            fs::write(dir.join("fxmanifest.lua"), "fx_version 'cerulean'\ngame 'gta5'\n")
+                .unwrap();
+        }
+
+        let scripts = Scripts::load_from(temp.path()).unwrap();
+        assert_eq!(scripts.scripts.len(), 3);
+        assert_eq!(scripts.scripts[0].name, "a-script");
+        assert_eq!(scripts.scripts[1].name, "m-script");
+        assert_eq!(scripts.scripts[2].name, "z-script");
+    }
+
+    #[cfg(target_os = "windows")]
+    #[test]
+    fn load_scripts_works_with_backslash_paths() {
+        use std::ffi::OsString;
+        let temp = TempDir::new("trek-scripts-win");
+        let script_dir = temp.path().join("win-resource");
+        fs::create_dir_all(&script_dir).unwrap();
+        fs::write(
+            script_dir.join("fxmanifest.lua"),
+            "fx_version 'cerulean'\ngame 'gta5'\n",
+        )
+        .unwrap();
+
+        let scripts = Scripts::load_from(temp.path()).unwrap();
+        assert_eq!(scripts.scripts.len(), 1);
+        assert_eq!(scripts.scripts[0].name, "win-resource");
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    #[test]
+    fn load_scripts_works_with_forward_slash_paths() {
+        let temp = TempDir::new("trek-scripts-unix");
+        let script_dir = temp.path().join("unix-resource");
+        fs::create_dir_all(&script_dir).unwrap();
+        fs::write(
+            script_dir.join("fxmanifest.lua"),
+            "fx_version 'cerulean'\ngame 'gta5'\n",
+        )
+        .unwrap();
+
+        let scripts = Scripts::load_from(temp.path()).unwrap();
+        assert_eq!(scripts.scripts.len(), 1);
+        assert_eq!(scripts.scripts[0].name, "unix-resource");
+    }
+}

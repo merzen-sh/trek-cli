@@ -242,4 +242,62 @@ mod tests {
             PathBuf::from("C:\\Users\\user\\AppData\\Roaming\\trek\\config.toml")
         );
     }
+
+    #[test]
+    fn workspace_path_returns_some_for_absolute_paths() {
+        let cfg = super::Config {
+            workspace_dir: Some("/home/user/projects".into()),
+            session_id: None,
+            user: None,
+        };
+        let p = cfg.workspace_path();
+        assert!(p.is_some());
+        assert_eq!(p.unwrap(), PathBuf::from("/home/user/projects"));
+    }
+
+    #[test]
+    fn workspace_path_returns_none_for_bracketed_name() {
+        let cfg = super::Config {
+            workspace_dir: Some("[my-project]".into()),
+            session_id: None,
+            user: None,
+        };
+        assert!(cfg.workspace_path().is_none());
+    }
+
+    #[test]
+    fn workspace_path_returns_none_when_unset() {
+        let cfg = super::Config {
+            workspace_dir: None,
+            session_id: None,
+            user: None,
+        };
+        assert!(cfg.workspace_path().is_none());
+    }
+
+    #[test]
+    fn workspace_path_recognizes_backslash_prefix() {
+        let cfg = super::Config {
+            workspace_dir: Some("\\server\\share\\projects".into()),
+            session_id: None,
+            user: None,
+        };
+        let p = cfg.workspace_path();
+        assert!(p.is_some());
+        assert_eq!(p.unwrap(), PathBuf::from("\\server\\share\\projects"));
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    #[test]
+    fn set_workspace_dir_rejects_nonexistent_path() {
+        let mut cfg = super::Config {
+            workspace_dir: None,
+            session_id: None,
+            user: None,
+        };
+        let result = cfg.set_workspace_dir(&PathBuf::from("/nonexistent-path-trek-test-12345"));
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("not a directory"), "got: {err}");
+    }
 }
