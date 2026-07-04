@@ -3,7 +3,6 @@ mod banner;
 mod browser;
 mod cli;
 
-mod log;
 mod login;
 mod scripts;
 mod server;

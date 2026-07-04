@@ -1,7 +1,7 @@
 use crate::server::run_server;
 use crate::{login, scripts};
 use trek_configuration::Config;
-use crate::{log_error, log_success};
+use trek_log::log_success;
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use std::path::Path;
@@ -80,30 +80,7 @@ pub fn run() -> Result<()> {
                 let start = std::time::Instant::now();
                 let scripts = scripts::load_scripts()?;
                 let elapsed = start.elapsed();
-                if scripts.scripts.is_empty() {
-                    log_error!("no scripts found in workspace");
-                } else {
-                    println!(
-                        "{:<16} {:<16} {:<14} {}",
-                        "Name", "Version", "Author", "Description"
-                    );
-
-                    for script in &scripts.scripts {
-                        let version = script.version.as_deref().unwrap_or("-");
-                        let author = script.author.as_deref().unwrap_or("-");
-                        let description = script.description.as_deref().unwrap_or("");
-                        println!(
-                            "{script:<16} {version:<16} {author:<14} {description}",
-                            script = script.name
-                        );
-                    }
-
-                    println!(
-                        "Found {} scripts in {:.2}ms",
-                        scripts.scripts.len(),
-                        elapsed.as_nanos() as f64 / 1_000_000.0
-                    );
-                }
+                scripts.print_list(elapsed);
             }
         },
         None => {

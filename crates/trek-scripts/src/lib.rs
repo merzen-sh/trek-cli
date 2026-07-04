@@ -2,6 +2,7 @@ use anyhow::{Context, Result};
 use serde::Serialize;
 use std::path::{Path, PathBuf};
 use trek_fxmanifest::ast::{Field, Manifest};
+use trek_log::log_error;
 
 /// A single script/resource found in the workspace.
 #[derive(Debug, Clone, Serialize)]
@@ -52,6 +53,34 @@ impl Scripts {
 
         scripts.sort_by(|a, b| a.name.cmp(&b.name));
         Ok(Scripts { scripts })
+    }
+
+    /// Print a formatted table of all scripts to stdout.
+    pub fn print_list(&self, elapsed: std::time::Duration) {
+        if self.scripts.is_empty() {
+            log_error!("no scripts found in workspace");
+        } else {
+            println!(
+                "{:<16} {:<16} {:<14} {}",
+                "Name", "Version", "Author", "Description"
+            );
+
+            for script in &self.scripts {
+                let version = script.version.as_deref().unwrap_or("-");
+                let author = script.author.as_deref().unwrap_or("-");
+                let description = script.description.as_deref().unwrap_or("");
+                println!(
+                    "{script:<16} {version:<16} {author:<14} {description}",
+                    script = script.name
+                );
+            }
+
+            println!(
+                "Found {} scripts in {:.2}ms",
+                self.scripts.len(),
+                elapsed.as_nanos() as f64 / 1_000_000.0
+            );
+        }
     }
 
     fn try_load_script(dir: &Path, name: &str) -> Option<Script> {

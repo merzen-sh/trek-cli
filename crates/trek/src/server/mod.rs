@@ -4,8 +4,9 @@ mod router;
 pub use crate::api::auth_api::{auth_pin, require_pin};
 
 #[cfg(all(not(feature = "swagger"), debug_assertions))]
-use crate::log_warn;
-use crate::{banner, browser::open_browser, log_debug, log_info, log_success, update};
+use trek_log::log_warn;
+use crate::{banner, browser::open_browser, update};
+use trek_log::{log_debug, log_info, log_success};
 use axum::middleware;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
