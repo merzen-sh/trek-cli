@@ -1,3 +1,39 @@
+## [0.3.0] - 2026-07-05
+
+### 🚀 Features
+
+- Add versioning system, changelog popup
+- Improve script list output formatting
+- Implement cross-platform browser opening utility
+
+### 🐛 Bug Fixes
+
+- Exit authentication flow after 3 failed PIN attempts instead of 4
+
+### 🚜 Refactor
+
+- Remove copy theme functionality from theme editor routes
+- Remove redundant log initialization
+- Extract configuration logic into a dedicated trek-configuration crate
+- Update CLI banner styling
+- Extract shared logging macros into reusable trek-log crate (#13)
+
+### 🎨 Styling
+
+- Update light and dark theme color palette variables
+
+### 🧪 Testing
+
+- Add comprehensive unit and integration test coverage across crates
+
+### ⚙️ Miscellaneous Tasks
+
+- Remove changelog file and ignore its directory
+- Remove unused trek-fxmanifest dependency from trek crate
+- Remove unused inquire and toml dependencies from trek crate (#12)
+- Remove Windows PowerShell installation script
+- Add dev script to package.json
+- Run format
 ## [0.2.0] - 2026-07-01
 
 ### 🚀 Features
@@ -21,7 +57,6 @@
 - Run formatter after generating api types in justfile
 - Update release workflow to use generated git-cliff changelog content
 - Update release workflow to generate and pass unreleased changelog content to pull requests and releases
-
 ## [0.1.2] - 2026-06-30
 
 ### 🐛 Bug Fixes
@@ -32,7 +67,6 @@
 
 - Update release workflow checkout logic
 - Swap version tags in workflow
-
 ## [0.1.1] - 2026-06-30
 
 ### 🚀 Features
@@ -52,7 +86,6 @@
 ### ⚙️ Miscellaneous Tasks
 
 - Update dependencies and prevent external 401 errors from triggering local pin clearing
-
 ## [0.1.0] - 2026-06-30
 
 ### 🚀 Features
