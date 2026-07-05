@@ -1,6 +1,6 @@
+use semver::Version;
 #[cfg(not(debug_assertions))]
 use trek_log::log_warn;
-use semver::Version;
 
 #[cfg(not(debug_assertions))]
 pub async fn check_for_updates() -> anyhow::Result<()> {

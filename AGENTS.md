@@ -2,21 +2,21 @@
 
 ## Dev commands (via `justfile`)
 
-| command               | what                                                                    |
-| --------------------- | ----------------------------------------------------------------------- |
-| `just dev`            | `cargo run -p trek --features swagger` (port 8080, proxies Vite 5173)   |
-| `just fmt`            | `cargo fmt` then `pnpm oxfmt .`                                         |
-| `just check`          | `cargo check --workspace`                                               |
-| `just next-test`      | `cargo nextest run --workspace` (preferred over `cargo test`)           |
-| `just release`        | `cargo build -p trek --release --features release-embed`                |
-| `just build-wasm`     | compile + bindgen → `packages/wasm-web/`                                |
-| `just compile-wasm`   | `cargo build -p trek-wasm --target wasm32-unknown-unknown --release`    |
-| `just bindgen-wasm`   | `wasm-bindgen` → `packages/wasm-web/`                                   |
+| command                   | what                                                                  |
+| ------------------------- | --------------------------------------------------------------------- |
+| `just dev`                | `cargo run -p trek --features swagger` (port 8080, proxies Vite 5173) |
+| `just fmt`                | `cargo fmt` then `pnpm oxfmt .`                                       |
+| `just check`              | `cargo check --workspace`                                             |
+| `just next-test`          | `cargo nextest run --workspace` (preferred over `cargo test`)         |
+| `just release`            | `cargo build -p trek --release --features release-embed`              |
+| `just build-wasm`         | compile + bindgen → `packages/wasm-web/`                              |
+| `just compile-wasm`       | `cargo build -p trek-wasm --target wasm32-unknown-unknown --release`  |
+| `just bindgen-wasm`       | `wasm-bindgen` → `packages/wasm-web/`                                 |
 | `just install-wasm-tools` | installs `wasm32-unknown-unknown` target + `wasm-bindgen-cli` 0.2.121 |
-| `just api-types`      | boots server on :9090 → `openapi-typescript` → kills server + fmt       |
-| `just shear`          | `cargo shear --fix` (remove unused Rust deps)                           |
-| `just shadcn <name>`  | adds shadcn component to `packages/ui/src/components/ui/`               |
-| `just build-app`      | `pnpm build` in `packages/app`                                          |
+| `just api-types`          | boots server on :9090 → `openapi-typescript` → kills server + fmt     |
+| `just shear`              | `cargo shear --fix` (remove unused Rust deps)                         |
+| `just shadcn <name>`      | adds shadcn component to `packages/ui/src/components/ui/`             |
+| `just build-app`          | `pnpm build` in `packages/app`                                        |
 
 Per-package `pnpm run dev` in `packages/app` runs Vite on :5173.  
 `pnpm run build` in `packages/app` runs `tsc -b && vite build && node ../../scripts/inject-app-version.js`.
@@ -27,23 +27,23 @@ Two workspaces sharing the root — **Cargo** (`crates/*`) and **pnpm** (`packag
 
 ### Rust crates
 
-| crate                 | type   | purpose                                              |
-| --------------------- | ------ | ---------------------------------------------------- |
-| `trek`                | binary | CLI + axum HTTP server (reverse proxy, static files) |
-| `trek-log`            | rlib   | ANSI-colored stderr logging macros (`log_error!`, etc.) |
-| `trek-configuration`  | rlib   | TOML-based user config at `~/.config/trek/config.toml` |
-| `trek-scripts`        | rlib   | workspace fxmanifest.lua scanning and management     |
-| `trek-fxmanifest`     | rlib   | FiveM fxmanifest.lua parser (lexer → parser → AST)   |
-| `trek-wasm`           | cdylib | wasm-bindgen bindings → `@trek-cli/wasm`             |
+| crate                | type   | purpose                                                 |
+| -------------------- | ------ | ------------------------------------------------------- |
+| `trek`               | binary | CLI + axum HTTP server (reverse proxy, static files)    |
+| `trek-log`           | rlib   | ANSI-colored stderr logging macros (`log_error!`, etc.) |
+| `trek-configuration` | rlib   | TOML-based user config at `~/.config/trek/config.toml`  |
+| `trek-scripts`       | rlib   | workspace fxmanifest.lua scanning and management        |
+| `trek-fxmanifest`    | rlib   | FiveM fxmanifest.lua parser (lexer → parser → AST)      |
+| `trek-wasm`          | cdylib | wasm-bindgen bindings → `@trek-cli/wasm`                |
 
 ### npm packages
 
-| package           | dir                   | purpose                                                  |
-| ----------------- | --------------------- | -------------------------------------------------------- |
+| package           | dir                   | purpose                                                    |
+| ----------------- | --------------------- | ---------------------------------------------------------- |
 | `app`             | `packages/app/`       | React frontend (Vite 8 + TanStack Router + TanStack Query) |
-| `ui`              | `packages/ui/`        | shadcn-style UI component library (CVA, `cn` utility)    |
-| `@trek/api-types` | `packages/api-types/` | OpenAPI generated types + manual external API types      |
-| `@trek-cli/wasm`  | `packages/wasm-web/`  | WASM bindings (generated, not committed as ts source)    |
+| `ui`              | `packages/ui/`        | shadcn-style UI component library (CVA, `cn` utility)      |
+| `@trek/api-types` | `packages/api-types/` | OpenAPI generated types + manual external API types        |
+| `@trek-cli/wasm`  | `packages/wasm-web/`  | WASM bindings (generated, not committed as ts source)      |
 
 ## Build quirks
 

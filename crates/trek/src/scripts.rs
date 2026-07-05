@@ -1,5 +1,5 @@
-use trek_configuration::Config;
 use anyhow::{Context, Result};
+use trek_configuration::Config;
 pub use trek_scripts::Scripts;
 
 /// Load all scripts from the configured workspace directory.

@@ -21,6 +21,7 @@
 - Run formatter after generating api types in justfile
 - Update release workflow to use generated git-cliff changelog content
 - Update release workflow to generate and pass unreleased changelog content to pull requests and releases
+
 ## [0.1.2] - 2026-06-30
 
 ### 🐛 Bug Fixes
@@ -31,6 +32,7 @@
 
 - Update release workflow checkout logic
 - Swap version tags in workflow
+
 ## [0.1.1] - 2026-06-30
 
 ### 🚀 Features
@@ -50,6 +52,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - Update dependencies and prevent external 401 errors from triggering local pin clearing
+
 ## [0.1.0] - 2026-06-30
 
 ### 🚀 Features

@@ -1,4 +1,3 @@
-use trek_log::log_warn;
 use axum::extract::Request;
 use axum::http::{HeaderMap, StatusCode};
 use axum::response::{IntoResponse, Response};
@@ -9,6 +8,7 @@ use std::collections::HashMap;
 use std::sync::LazyLock;
 use std::sync::Mutex;
 use std::time::Instant;
+use trek_log::log_warn;
 
 static CLIENT: LazyLock<Client> = LazyLock::new(|| {
     Client::builder()

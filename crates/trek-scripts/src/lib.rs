@@ -212,8 +212,11 @@ server_script 'server.lua'
         for name in ["z-script", "a-script", "m-script"] {
             let dir = temp.path().join(name);
             fs::create_dir_all(&dir).unwrap();
-            fs::write(dir.join("fxmanifest.lua"), "fx_version 'cerulean'\ngame 'gta5'\n")
-                .unwrap();
+            fs::write(
+                dir.join("fxmanifest.lua"),
+                "fx_version 'cerulean'\ngame 'gta5'\n",
+            )
+            .unwrap();
         }
 
         let scripts = Scripts::load_from(temp.path()).unwrap();

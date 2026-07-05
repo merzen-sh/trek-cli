@@ -18,9 +18,13 @@ pub fn print_banner() {
     let height = lines.len();
 
     for (y, line) in lines.iter().enumerate() {
-        let pos = if height > 1 { y as f32 / (height - 1) as f32 } else { 0.0 };
+        let pos = if height > 1 {
+            y as f32 / (height - 1) as f32
+        } else {
+            0.0
+        };
         let color = grad.at(pos);
-        
+
         let (r, g, b) = (
             (color.r * 255.0) as u8,
             (color.g * 255.0) as u8,

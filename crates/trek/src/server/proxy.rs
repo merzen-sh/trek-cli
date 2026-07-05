@@ -5,7 +5,6 @@ use axum::response::{IntoResponse, Response};
 #[cfg(debug_assertions)]
 mod inner {
     use super::*;
-    use trek_log::log_warn;
     use bytes::Bytes;
     use http_body_util::BodyExt;
     use http_body_util::Full;
@@ -13,6 +12,7 @@ mod inner {
     use hyper_util::client::legacy::connect::HttpConnector;
     use hyper_util::rt::TokioExecutor;
     use std::sync::LazyLock;
+    use trek_log::log_warn;
 
     static CLIENT: LazyLock<Client<HttpConnector, Full<Bytes>>> =
         LazyLock::new(|| Client::builder(TokioExecutor::new()).build_http());

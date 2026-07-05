@@ -116,19 +116,26 @@ game "gta5"
 
 #[test]
 fn parse_with_windows_crlf_line_endings() {
-    let input = "fx_version 'cerulean'\r\ngame 'gta5'\r\nauthor 'Windows User'\r\nversion '1.0.0'\r\n";
+    let input =
+        "fx_version 'cerulean'\r\ngame 'gta5'\r\nauthor 'Windows User'\r\nversion '1.0.0'\r\n";
     let manifest = trek_fxmanifest::parse(input).unwrap();
     assert_eq!(manifest.fx_version, "cerulean");
     assert_eq!(manifest.games.len(), 1);
-    let author = manifest
-        .fields
-        .iter()
-        .find_map(|f| if let trek_fxmanifest::ast::Field::Author(a) = f { Some(a.as_str()) } else { None });
+    let author = manifest.fields.iter().find_map(|f| {
+        if let trek_fxmanifest::ast::Field::Author(a) = f {
+            Some(a.as_str())
+        } else {
+            None
+        }
+    });
     assert_eq!(author, Some("Windows User"));
-    let version = manifest
-        .fields
-        .iter()
-        .find_map(|f| if let trek_fxmanifest::ast::Field::Version(v) = f { Some(v.as_str()) } else { None });
+    let version = manifest.fields.iter().find_map(|f| {
+        if let trek_fxmanifest::ast::Field::Version(v) = f {
+            Some(v.as_str())
+        } else {
+            None
+        }
+    });
     assert_eq!(version, Some("1.0.0"));
 }
 

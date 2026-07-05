@@ -1,10 +1,10 @@
 use crate::server::run_server;
 use crate::{login, scripts};
-use trek_configuration::Config;
-use trek_log::log_success;
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use std::path::Path;
+use trek_configuration::Config;
+use trek_log::log_success;
 
 #[derive(Parser)]
 #[command(name = "trek", version, about)]

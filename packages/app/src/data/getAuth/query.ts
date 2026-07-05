@@ -7,6 +7,8 @@ export function authQuery(pin: string) {
   return queryOptions({
     queryKey: authKeys.status(pin),
     queryFn: async () => {
+      if (pin == "") return "wrong-pin";
+
       const res = await fetch("/api/auth", {
         headers: { "X-Auth-Pin": pin },
       });

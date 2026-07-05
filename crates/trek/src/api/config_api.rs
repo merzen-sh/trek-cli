@@ -1,4 +1,3 @@
-use trek_log::log_success;
 use axum::Json;
 use axum::extract::{Path, Request};
 use axum::http::StatusCode;
@@ -6,6 +5,7 @@ use axum::response::{IntoResponse, Response};
 use http_body_util::BodyExt;
 use serde_json::Value;
 use std::path::PathBuf;
+use trek_log::log_success;
 
 fn prevent_traversal(name: &str) -> Result<PathBuf, Response> {
     if name.contains('/') || name.contains('\\') || name.contains("..") {

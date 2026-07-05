@@ -81,7 +81,10 @@ impl Config {
 
         self.workspace_dir = Some(name.clone());
         self.save()?;
-        eprintln!("\x1b[36m[INFO]\x1b[0m saved workspace_dir to {}", Self::path().display());
+        eprintln!(
+            "\x1b[36m[INFO]\x1b[0m saved workspace_dir to {}",
+            Self::path().display()
+        );
         Ok(name)
     }
 
