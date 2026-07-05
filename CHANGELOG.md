@@ -1,3 +1,8 @@
+## [0.3.1] - 2026-07-05
+
+### ⚙️ Miscellaneous Tasks
+
+- Update checkout action to use release branch for non-dry-run releases
 ## [0.3.0] - 2026-07-05
 
 ### 🚀 Features
