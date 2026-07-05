@@ -1,6 +1,9 @@
 {
   "name": "@trek-cli/monorepo",
   "version": "0.2.0",
+  "scripts": {
+      "dev": "pnpm --filter app dev"
+  },
   "dependencies": {
     "oxfmt": "^0.56.0",
     "oxlint": "^1.71.0",
