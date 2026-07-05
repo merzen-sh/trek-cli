@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Settings, Home, Sliders, PanelLeftClose, PanelLeft } from "lucide-react";
+import {
+  Settings,
+  Home,
+  Sliders,
+  PanelLeftClose,
+  AppWindow,
+  FileJson,
+  Palette,
+} from "lucide-react";
 import { useAppSetting } from "../lib/use-app-setting";
 import { cn } from "ui";
 import { SettingsDialog } from "./settings-dialog";
@@ -9,7 +17,7 @@ interface Resource {
   id: string;
   name: string;
   icon: typeof Home;
-  menus: { label: string; to?: string }[];
+  menus: { label: string; to?: string; icon?: typeof Home }[];
 }
 
 const resources: Resource[] = [
@@ -24,8 +32,9 @@ const resources: Resource[] = [
     name: "Configuration",
     icon: Sliders,
     menus: [
-      { label: "Config Editor", to: "/config" },
-      { label: "Theme Editor", to: "/theme" },
+      { label: "Overview", to: "/overview", icon: AppWindow },
+      { label: "Config Editor", to: "/config", icon: FileJson },
+      { label: "Theme Editor", to: "/theme", icon: Palette },
     ],
   },
 ];
@@ -56,8 +65,10 @@ function SidebarContent({
               key={r.id}
               onClick={() => onSelect(r.id)}
               className={cn(
-                "flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground",
-                selected === r.id && "rounded-md bg-primary text-primary-foreground",
+                "flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors",
+                selected === r.id
+                  ? "bg-primary/10 text-primary"
+                  : "hover:bg-accent hover:text-accent-foreground",
               )}
               title={r.name}
             >
@@ -68,8 +79,8 @@ function SidebarContent({
         <button
           onClick={() => setSettingsOpen(!settingsOpen)}
           className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:rounded-lg hover:bg-primary hover:text-primary-foreground",
-            settingsOpen && "rounded-lg bg-primary text-primary-foreground",
+            "flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:rounded-lg hover:bg-accent hover:text-accent-foreground",
+            settingsOpen && "rounded-lg bg-accent text-accent-foreground",
           )}
           title="Settings"
         >
@@ -77,42 +88,44 @@ function SidebarContent({
         </button>
       </aside>
 
-      <aside
-        className={cn(
-          "overflow-hidden bg-background transition-all duration-200",
-          sidebarOpen ? "border-r w-60" : "w-0",
-        )}
-      >
-        {active && (
-          <div className="w-60 shrink-0">
-            <div className="flex h-14 items-center justify-between border-b px-4 text-sm font-semibold">
-              <span>{active.name}</span>
-              <button
-                onClick={toggleSidebar}
-                className="flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-                title="Toggle sidebar"
-              >
-                {sidebarOpen ? (
-                  <PanelLeftClose className="h-3.5 w-3.5" />
-                ) : (
-                  <PanelLeft className="h-3.5 w-3.5" />
-                )}
-              </button>
-            </div>
-            <nav className="space-y-0.5 p-2">
-              {active.menus.map((m) => (
-                <Link
-                  key={m.label}
-                  to={m.to || "/"}
-                  className="flex w-full items-center rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground [&.active]:bg-accent [&.active]:text-accent-foreground font-medium transition-colors"
+      {selected !== "home" && (
+        <aside
+          className={cn(
+            "bg-background border-r shrink-0 overflow-hidden transition-all duration-200",
+            sidebarOpen ? "w-60" : "w-0",
+          )}
+        >
+          {active && (
+            <div className="w-60 shrink-0">
+              <div className="flex h-14 items-center justify-between border-b px-4 text-sm font-semibold">
+                <span>{active.name}</span>
+                <button
+                  onClick={toggleSidebar}
+                  className="flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                  title="Toggle sidebar"
                 >
-                  {m.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        )}
-      </aside>
+                  <PanelLeftClose className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <nav className="space-y-0.5 p-2">
+                {active.menus.map((m) => {
+                  const Icon = m.icon;
+                  return (
+                    <Link
+                      key={m.label}
+                      to={m.to || "/"}
+                      className="flex w-full items-center gap-2 border-l-2 border-transparent px-3 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground [&.active]:border-primary [&.active]:bg-primary/10 [&.active]:text-primary [&.active]:hover:bg-primary/10 [&.active]:hover:text-primary font-medium transition-colors"
+                    >
+                      {Icon && <Icon className="h-4 w-4" />}
+                      {m.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          )}
+        </aside>
+      )}
     </>
   );
 }
@@ -127,7 +140,11 @@ export function Sidebar() {
   const pathname = location.pathname;
 
   const selected =
-    pathname.startsWith("/config") || pathname.startsWith("/theme") ? "config" : "home";
+    pathname.startsWith("/config") ||
+    pathname.startsWith("/theme") ||
+    pathname.startsWith("/overview")
+      ? "config"
+      : "home";
 
   const navigate = useNavigate();
 

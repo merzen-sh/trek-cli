@@ -48,7 +48,7 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
                   <div className="w-full h-14 bg-white border rounded-md p-1.5 flex flex-col gap-1 shadow-sm">
                     <div className="h-2 bg-gray-200 rounded w-3/4" />
                     <div className="h-2 bg-gray-200 rounded w-1/2" />
-                    <div className="h-4 bg-blue-100 rounded w-full mt-auto flex items-center justify-center text-[8px] text-blue-600">
+                    <div className="h-4 bg-primary rounded w-full mt-auto flex items-center justify-center text-[8px] text-primary-foreground">
                       Button
                     </div>
                   </div>
@@ -62,10 +62,10 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
                     theme === "dark" && "border-primary ring-1 ring-primary",
                   )}
                 >
-                  <div className="w-full h-14 bg-slate-950 border border-slate-800 rounded-md p-1.5 flex flex-col gap-1 shadow-sm">
-                    <div className="h-2 bg-slate-800 rounded w-3/4" />
-                    <div className="h-2 bg-slate-800 rounded w-1/2" />
-                    <div className="h-4 bg-slate-800 rounded w-full mt-auto flex items-center justify-center text-[8px] text-slate-400">
+                  <div className="w-full h-14 bg-neutral-950 border rounded-md p-1.5 flex flex-col gap-1 shadow-sm">
+                    <div className="h-2 bg-neutral-800 rounded w-3/4" />
+                    <div className="h-2 bg-neutral-800 rounded w-1/2" />
+                    <div className="h-4 bg-primary rounded w-full mt-auto flex items-center justify-center text-[8px] text-primary-foreground">
                       Button
                     </div>
                   </div>
@@ -79,18 +79,18 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
                     theme === "system" && "border-primary ring-1 ring-primary",
                   )}
                 >
-                  <div className="w-full h-14 bg-gradient-to-br from-white to-slate-950 border rounded-md p-1.5 flex flex-col gap-1 shadow-sm overflow-hidden relative">
-                    <div className="absolute inset-0 flex">
-                      <div className="w-1/2 bg-white p-1.5 flex flex-col gap-1">
+                  <div className="w-full h-14 bg-[linear-gradient(135deg,white_50%,#0a0a0a_50%)] border rounded-md shadow-sm overflow-hidden relative">
+                    <div className="absolute inset-0 grid grid-cols-2">
+                      <div className="p-1.5 flex flex-col gap-1">
                         <div className="h-2 bg-gray-200 rounded w-3/4" />
                         <div className="h-2 bg-gray-200 rounded w-1/2" />
                       </div>
-                      <div className="w-1/2 bg-slate-950 p-1.5 flex flex-col gap-1">
-                        <div className="h-2 bg-slate-800 rounded w-3/4" />
-                        <div className="h-2 bg-slate-800 rounded w-1/2" />
+                      <div className="p-1.5 flex flex-col gap-1">
+                        <div className="h-2 bg-neutral-800 rounded w-3/4" />
+                        <div className="h-2 bg-neutral-800 rounded w-1/2" />
                       </div>
                     </div>
-                    <div className="h-4 bg-gray-500/20 rounded w-full mt-auto flex items-center justify-center text-[8px] text-white/70 z-10">
+                    <div className="h-4 bg-primary rounded w-full mt-auto flex items-center justify-center text-[8px] text-primary-foreground z-10 absolute bottom-0 left-0 right-0 mx-1.5 mb-1.5">
                       Button
                     </div>
                   </div>

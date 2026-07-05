@@ -41,7 +41,9 @@ export function OverviewPage() {
             />
           )}
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">{order?.product?.name ?? activeScript}</h1>
+            <h1 className="text-2xl font-bold tracking-tight">
+              {order?.product?.name ?? activeScript}
+            </h1>
             {order && (
               <p className="text-sm text-muted-foreground">
                 Token:{" "}
