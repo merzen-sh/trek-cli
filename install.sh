@@ -7,6 +7,10 @@ CANARY=false
 INSTALL_DIR="${HOME}/trek/bin"
 BINARY_NAME="trek"
 
+TARGET=""
+ARCHIVE_NAME=""
+BINARY_NAME_TARGET=""
+
 if [[ -t 1 ]]; then
   BOLD='\033[1m'; BLUE='\033[1;34m'; GREEN='\033[1;32m'; YELLOW='\033[1;33m'; RED='\033[1;31m'; DARKGRAY='\033[1;90m'; NC='\033[0m'
 else
@@ -37,6 +41,7 @@ parse_args() {
   while [[ $# -gt 0 ]]; do
     case $1 in
       -v|--version)
+        [[ $# -ge 2 ]] || { error "Missing value for $1"; exit 1; }
         VERSION="$2"
         shift 2
         ;;
@@ -45,6 +50,7 @@ parse_args() {
         shift
         ;;
       -d|--dir)
+        [[ $# -ge 2 ]] || { error "Missing value for $1"; exit 1; }
         INSTALL_DIR="$2"
         shift 2
         ;;
@@ -62,6 +68,17 @@ parse_args() {
         ;;
     esac
   done
+}
+
+check_dependencies() {
+  local missing=()
+  for cmd in curl tar sha256sum; do
+    command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
+  done
+  if (( ${#missing[@]} > 0 )); then
+    error "Missing required tool(s): ${missing[*]}"
+    exit 1
+  fi
 }
 
 handle_windows() {
@@ -118,11 +135,51 @@ detect_platform() {
 
 github_api() {
   local path="$1"
-  curl -sf "https://api.github.com/repos/$REPO$path"
+  local response http_code
+
+  # Capture body and status separately so a 404/rate-limit doesn't
+  # silently look like "no version found".
+  response=$(curl -sf -w '\n%{http_code}' "https://api.github.com/repos/$REPO$path") || {
+    error "GitHub API request failed for: $path"
+    return 1
+  }
+  http_code="${response##*$'\n'}"
+  response="${response%$'\n'*}"
+
+  if [[ "$http_code" != "200" ]]; then
+    error "GitHub API returned HTTP $http_code for: $path"
+    return 1
+  fi
+
+  echo "$response"
+}
+
+json_tag_name() {
+  # Extracts the first top-level "tag_name" value from a JSON object/array on stdin
+  if command -v jq >/dev/null 2>&1; then
+    jq -r 'if type == "array" then .[0].tag_name else .tag_name end' 2>/dev/null
+  else
+    grep -m1 '"tag_name"' | sed -E 's/.*"tag_name"[[:space:]]*:[[:space:]]*"([^"]*)".*/\1/'
+  fi
+}
+
+json_first_prerelease_tag() {
+  # Extracts the tag_name of the first array element where prerelease == true
+  if command -v jq >/dev/null 2>&1; then
+    jq -r '[.[] | select(.prerelease == true)][0].tag_name // empty' 2>/dev/null
+  else
+    # Fallback: scan releases one at a time using awk, since each release
+    # object spans multiple lines when the JSON is not pretty-printed on
+    # one line per record. We flatten to one release per line first.
+    tr -d '\n' | grep -o '{[^{}]*"tag_name"[^{}]*}' | \
+      grep '"prerelease"[[:space:]]*:[[:space:]]*true' | \
+      head -n1 | \
+      sed -E 's/.*"tag_name"[[:space:]]*:[[:space:]]*"([^"]*)".*/\1/'
+  fi
 }
 
 resolve_version_via_tags() {
-  github_api "/tags" | grep '"name":' | sed -E 's/.*"name": "v([^"]+)".*/\1/' | head -n 1
+  github_api "/tags" | grep -m1 '"name"' | sed -E 's/.*"name"[[:space:]]*:[[:space:]]*"v?([^"]*)".*/\1/'
 }
 
 resolve_version() {
@@ -132,15 +189,8 @@ resolve_version() {
 
   if [[ "$CANARY" == true ]]; then
     info "Retrieving latest canary version..."
-    VERSION=$(github_api "/releases" | \
-      python3 -c "
-import sys, json
-releases = json.load(sys.stdin)
-for r in releases:
-    if r.get('prerelease'):
-        print(r['tag_name'].lstrip('v'))
-        break
-" 2>/dev/null || true)
+    VERSION=$(github_api "/releases" | json_first_prerelease_tag || true)
+    VERSION="${VERSION#v}"
 
     if [[ -z "$VERSION" ]]; then
       warn "No canary release found. Falling back to latest tag."
@@ -151,12 +201,8 @@ for r in releases:
 
   if [[ -z "$VERSION" ]]; then
     info "Retrieving latest stable version..."
-    VERSION=$(github_api "/releases/latest" | \
-      python3 -c "
-import sys, json
-r = json.load(sys.stdin)
-print(r['tag_name'].lstrip('v'))
-" 2>/dev/null || true)
+    VERSION=$(github_api "/releases/latest" | json_tag_name || true)
+    VERSION="${VERSION#v}"
 
     if [[ -z "$VERSION" ]]; then
       warn "No releases found. Falling back to latest tag."
@@ -194,17 +240,18 @@ verify_checksum() {
   fi
 
   local expected
-  expected=$(grep "  $ARCHIVE_NAME$" "$checksums_file" 2>/dev/null || true)
-  if [[ -z "$expected" ]]; then
+  # Match by filename in the second (or later) column rather than a fixed
+  # two-space separator, since sha256sum output can vary in spacing.
+  expected=$(awk -v f="$ARCHIVE_NAME" '$2 == f || $2 == "*"f {print; found=1} END{exit !found}' "$checksums_file") || {
     warn "No checksum found for $ARCHIVE_NAME in SHASUMS.txt."
     return
-  fi
+  }
 
-  echo "$expected" | (cd "$TMP_DIR" && sha256sum -c --quiet - 2>/dev/null) || {
+  if ! echo "$expected" | (cd "$TMP_DIR" && sha256sum -c --quiet - 2>/dev/null); then
     error "Checksum verification failed!"
     echo "  Expected: $expected" >&2
     exit 1
-  }
+  fi
   success "Checksum verified."
 }
 
@@ -224,6 +271,10 @@ extract_and_install() {
   fi
 
   if [[ ! -w "$INSTALL_DIR" ]]; then
+    if ! command -v sudo >/dev/null 2>&1; then
+      error "No write access to $INSTALL_DIR and sudo is not available."
+      exit 1
+    fi
     sudo cp "$src" "$dst"
     sudo chmod +x "$dst"
   else
@@ -282,6 +333,7 @@ update_shell_config() {
 
 main() {
   parse_args "$@"
+  check_dependencies
 
   TMP_DIR=$(mktemp -d)
   trap 'rm -rf "$TMP_DIR"' EXIT
