@@ -18,6 +18,12 @@ importers:
         specifier: ^7.7.1
         version: 7.8.5
 
+  npm/trek-cli: {}
+
+  npm/trek-linux-x64: {}
+
+  npm/trek-win32-x64: {}
+
   packages/api-types: {}
 
   packages/app:

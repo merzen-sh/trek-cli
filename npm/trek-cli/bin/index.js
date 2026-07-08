@@ -3,9 +3,34 @@ const { spawn } = require("child_process");
 const path = require("path");
 
 const platforms = {
-  win32: { os: "win32", arch: "x64", pkg: "@trek-cli/trek-win32-x64", binary: "trek.exe" },
-  linux: { os: "linux", arch: "x64", pkg: "@trek-cli/trek-linux-x64", binary: "trek" },
+  win32: {
+    os: "win32",
+    arch: "x64",
+    pkg: "@trek-cli/trek-win32-x64",
+    binary: "trek.exe",
+  },
+  linux: {
+    os: "linux",
+    arch: "x64",
+    pkg: "@trek-cli/trek-linux-x64",
+    binary: "trek",
+  },
 };
+
+function getRuntimeName() {
+  if (typeof Deno !== "undefined") {
+    return "deno";
+  }
+  if (typeof Bun !== "undefined") {
+    return "bun";
+  }
+  if (typeof process !== "undefined" && process.release?.name === "node") {
+    return "node";
+  }
+  return "unknown";
+}
+
+const runtimeName = getRuntimeName();
 
 const key = `${process.platform}-${process.arch}`;
 const target = key === "win32-x64" ? platforms.win32 : key === "linux-x64" ? platforms.linux : null;
@@ -24,6 +49,10 @@ try {
 }
 
 const child = spawn(binaryPath, process.argv.slice(2), {
+  env: {
+    ...process.env,
+    TREK_RUNTIME: runtimeName,
+  },
   stdio: "inherit",
 });
 
