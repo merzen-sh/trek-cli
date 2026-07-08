@@ -24,9 +24,17 @@ done
 
 sed -i "s/\"version\": \".*\"/\"version\": \"$NEW_VERSION\"/" \
   "$ROOT_DIR/package.json" \
+  "$ROOT_DIR/npm/trek-cli/package.json" \
+  "$ROOT_DIR/npm/trek-win32-x64/package.json" \
+  "$ROOT_DIR/npm/trek-linux-x64/package.json" \
   "$ROOT_DIR/packages/wasm-web/package.json" \
   "$ROOT_DIR/packages/app/package.json" \
   "$ROOT_DIR/packages/ui/package.json" \
   "$ROOT_DIR/packages/api-types/package.json"
+
+sed -i "s/\"@trek-cli\/trek-win32-x64\": \".*\"/\"@trek-cli\/trek-win32-x64\": \"$NEW_VERSION\"/" \
+  "$ROOT_DIR/npm/trek-cli/package.json"
+sed -i "s/\"@trek-cli\/trek-linux-x64\": \".*\"/\"@trek-cli\/trek-linux-x64\": \"$NEW_VERSION\"/" \
+  "$ROOT_DIR/npm/trek-cli/package.json"
 
 echo "Bumpped version to $NEW_VERSION"
