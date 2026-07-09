@@ -1,3 +1,4 @@
+mod ip_filter;
 mod proxy;
 mod router;
 
@@ -28,7 +29,9 @@ impl Server {
     pub async fn run(self) -> anyhow::Result<()> {
         let start = std::time::Instant::now();
 
-        let app = router::create().layer(middleware::from_fn(require_pin));
+        let app = router::create()
+            .layer(middleware::from_fn(require_pin))
+            .layer(middleware::from_fn(ip_filter::require_allowed_ip));
         let addr = SocketAddr::from(([0, 0, 0, 0], self.port));
         let listener = TcpListener::bind(addr).await?;
 
@@ -60,7 +63,11 @@ impl Server {
             }
         });
 
-        axum::serve(listener, app).await?;
+        axum::serve(
+            listener,
+            app.into_make_service_with_connect_info::<SocketAddr>(),
+        )
+        .await?;
         Ok(())
     }
 }

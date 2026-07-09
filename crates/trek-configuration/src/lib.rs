@@ -3,6 +3,10 @@ use inquire::Text;
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
+fn default_allowed_ips() -> Vec<String> {
+    vec!["127.0.0.1".into(), "::1".into(), "localhost".into()]
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     pub workspace_dir: Option<String>,
@@ -10,6 +14,8 @@ pub struct Config {
     pub session_id: Option<String>,
     #[serde(default)]
     pub user: Option<serde_json::Value>,
+    #[serde(default = "default_allowed_ips")]
+    pub allowed_ips: Vec<String>,
 }
 
 impl Config {
@@ -32,6 +38,7 @@ impl Config {
                 workspace_dir: None,
                 session_id: None,
                 user: None,
+                allowed_ips: default_allowed_ips(),
             })
         }
     }
@@ -252,6 +259,7 @@ mod tests {
             workspace_dir: Some("/home/user/projects".into()),
             session_id: None,
             user: None,
+            allowed_ips: vec![],
         };
         let p = cfg.workspace_path();
         assert!(p.is_some());
@@ -264,6 +272,7 @@ mod tests {
             workspace_dir: Some("[my-project]".into()),
             session_id: None,
             user: None,
+            allowed_ips: vec![],
         };
         assert!(cfg.workspace_path().is_none());
     }
@@ -274,6 +283,7 @@ mod tests {
             workspace_dir: None,
             session_id: None,
             user: None,
+            allowed_ips: vec![],
         };
         assert!(cfg.workspace_path().is_none());
     }
@@ -284,6 +294,7 @@ mod tests {
             workspace_dir: Some("\\server\\share\\projects".into()),
             session_id: None,
             user: None,
+            allowed_ips: vec![],
         };
         let p = cfg.workspace_path();
         assert!(p.is_some());
@@ -297,6 +308,7 @@ mod tests {
             workspace_dir: None,
             session_id: None,
             user: None,
+            allowed_ips: vec![],
         };
         let result = cfg.set_workspace_dir(&PathBuf::from("/nonexistent-path-trek-test-12345"));
         assert!(result.is_err());

@@ -63,6 +63,12 @@ pub fn create() -> Router {
             get(crate::api::theme_api::get_theme).post(crate::api::theme_api::save_theme),
         )
         .route(
+            "/api/allowed-ips",
+            get(crate::api::ip_filter_api::list)
+                .post(crate::api::ip_filter_api::add)
+                .delete(crate::api::ip_filter_api::delete),
+        )
+        .route(
             "/external/api/*api_path",
             any(crate::api::proxy_api::handler),
         );
