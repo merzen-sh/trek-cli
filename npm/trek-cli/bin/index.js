@@ -30,7 +30,14 @@ function getRuntimeName() {
   return "unknown";
 }
 
+function getPackageManager() {
+  const ua = process.env.npm_config_user_agent ?? "";
+  const match = ua.match(/^(\w+)\//);
+  return match ? match[1] : "";
+}
+
 const runtimeName = getRuntimeName();
+const pkgManager = getPackageManager();
 
 const key = `${process.platform}-${process.arch}`;
 const target = key === "win32-x64" ? platforms.win32 : key === "linux-x64" ? platforms.linux : null;
@@ -52,6 +59,7 @@ const child = spawn(binaryPath, process.argv.slice(2), {
   env: {
     ...process.env,
     TREK_RUNTIME: runtimeName,
+    TREK_PACKAGE_MANAGER: pkgManager,
   },
   stdio: "inherit",
 });

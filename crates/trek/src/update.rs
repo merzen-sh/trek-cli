@@ -2,6 +2,20 @@ use semver::Version;
 #[cfg(not(debug_assertions))]
 use trek_log::log_warn;
 
+fn runtime_install_cmd() -> &'static str {
+    match std::env::var("TREK_PACKAGE_MANAGER").as_deref() {
+        Ok("pnpm") => "pnpm add -g @trek-cli/cli",
+        Ok("yarn") => "yarn global add @trek-cli/cli",
+        Ok("npm") => "npm i -g @trek-cli/cli",
+        Ok("bun") => "bun i -g @trek-cli/cli",
+        _ => match std::env::var("TREK_RUNTIME").as_deref() {
+            Ok("bun") => "bun i -g @trek-cli/cli",
+            Ok("deno") => "deno install -g npm:@trek-cli/cli",
+            _ => "https://github.com/merzen-sh/trek-cli/releases/latest",
+        },
+    }
+}
+
 #[cfg(not(debug_assertions))]
 pub async fn check_for_updates() -> anyhow::Result<()> {
     let current_version = env!("CARGO_PKG_VERSION");
@@ -37,7 +51,7 @@ pub async fn check_for_updates() -> anyhow::Result<()> {
     ) {
         if latest > current {
             log_warn!("A new version of trek-cli is available: v{latest} (current: v{current})");
-            log_warn!("Download it from: https://github.com/merzen-sh/trek-cli/releases/latest");
+            log_warn!("Update with: {}", runtime_install_cmd());
         }
     }
 
