@@ -239,9 +239,9 @@ jobs:
             fi
           done
 
-          npm publish npm/trek-linux-x64 --access public
-          npm publish npm/trek-win32-x64 --access public
-          npm publish npm/trek-cli --access public
+          npm publish ./npm/trek-linux-x64 --access public
+          npm publish ./npm/trek-win32-x64 --access public
+          npm publish ./npm/trek-cli --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
