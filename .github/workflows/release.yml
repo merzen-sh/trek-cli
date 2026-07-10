@@ -198,8 +198,55 @@ jobs:
           name: trek-${{ matrix.settings.target }}
           path: dist/trek-${{ matrix.settings.target }}${{ matrix.settings.ext }}
 
-  release:
+  publish-npm:
     needs: [build-rust, bump-version]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: release/v${{ needs.bump-version.outputs.version }}
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v7
+        with:
+          path: ./dist
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Publish npm packages
+        if: ${{ !inputs.dryRun }}
+        run: |
+          set -euo pipefail
+          for artifact_dir in dist/trek-*/; do
+            dirname="$(basename "$artifact_dir")"
+            target="${dirname#trek-}"
+            ext=""
+            case "$target" in
+              x86_64-pc-windows-msvc) ext=".exe" ;;
+            esac
+
+            src_file="$artifact_dir$dirname$ext"
+            mkdir -p "target/$target/release"
+
+            if [ -f "$src_file" ]; then
+              cp "$src_file" "target/$target/release/trek$ext"
+              bash scripts/copy-binaries.sh "$target"
+            else
+              echo "Warning: $src_file not found — skipping $target"
+            fi
+          done
+
+          npm publish npm/trek-linux-x64 --access public
+          npm publish npm/trek-win32-x64 --access public
+          npm publish npm/trek-cli --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  release:
+    needs: [build-rust, bump-version, publish-npm]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (Release)

@@ -10,8 +10,8 @@ case "$TARGET" in
   x86_64-pc-windows-msvc) PKG="trek-win32-x64"; EXT=".exe" ;;
   x86_64-unknown-linux-gnu) PKG="trek-linux-x64"; EXT="" ;;
   *)
-    echo "Unknown target: $TARGET"
-    exit 1
+    echo "Warning: Unknown target '$TARGET' — skipping binary copy"
+    exit 0
     ;;
 esac
 
