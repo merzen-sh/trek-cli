@@ -1,3 +1,25 @@
+## [0.4.0] - 2026-07-10
+
+### 🚀 Features
+
+- Add overview page for script details and refine theme preview styling
+- Update sidebar navigation layout and refine settings dialog theme preview styling
+- Add platform-specific NPM packages and CLI binary distribution scripts
+- Implement IP filtering middleware
+
+### 🚜 Refactor
+
+- Improve installer reliability by adding dependency checks
+- Update justfile to use just api-types
+- Remove redundant just api-types call from dev-setup target
+
+### ⚙️ Miscellaneous Tasks
+
+- CLI entry point to dynamically
+- Generate api-types automatically
+- Add npm publish job to release workflow
+- Remove ./npm/ from pnpm workspace and update lockfile
+- Update npm publish paths to use relative directory
 ## [0.3.1] - 2026-07-05
 
 ### ⚙️ Miscellaneous Tasks
