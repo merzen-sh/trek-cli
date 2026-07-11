@@ -8,6 +8,8 @@ export function Navbar() {
   const sidebarOpen = useAppSetting((s) => s.sidebarOpen);
   const toggleSidebar = useAppSetting((s) => s.toggleSidebar);
 
+  const version = window.__TREK_CLI__?.App?.version;
+
   return (
     <header className="flex h-14 items-center justify-between border-b px-2">
       <div className="flex items-center gap-2">
@@ -19,7 +21,7 @@ export function Navbar() {
 
       <div className="flex items-center gap-3">
         <span className="text-xs font-mono text-muted-foreground">
-          v{window.__TREK_CLI__?.App?.version ?? "?"}
+          {version === "<%version%>" ? "dev" : "v" + version}
         </span>
         <ThemeSwitcher />
       </div>

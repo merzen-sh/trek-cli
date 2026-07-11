@@ -2,6 +2,7 @@ use semver::Version;
 #[cfg(not(debug_assertions))]
 use trek_log::log_warn;
 
+#[cfg(not(debug_assertions))]
 fn runtime_install_cmd() -> &'static str {
     match std::env::var("TREK_PACKAGE_MANAGER").as_deref() {
         Ok("pnpm") => "pnpm add -g @trek-cli/cli",
