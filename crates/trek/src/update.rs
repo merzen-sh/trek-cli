@@ -1,3 +1,4 @@
+#[cfg(any(not(debug_assertions), test))]
 use semver::Version;
 #[cfg(not(debug_assertions))]
 use trek_log::log_warn;
@@ -34,7 +35,10 @@ pub async fn check_for_updates() -> anyhow::Result<()> {
         .await?;
 
     if !res.status().is_success() {
-        return Ok(());
+        return Err(anyhow::anyhow!(
+            "Failed to check for updates {}",
+            res.status()
+        ));
     }
 
     #[derive(serde::Deserialize)]

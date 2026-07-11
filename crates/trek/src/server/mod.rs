@@ -4,13 +4,17 @@ mod router;
 
 pub use crate::api::auth_api::{auth_pin, require_pin};
 
-use crate::{banner, browser::open_browser, update};
+#[cfg(not(debug_assertions))]
+use crate::update;
+use crate::{banner, browser::open_browser};
 use axum::middleware;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
 #[cfg(all(not(feature = "swagger"), debug_assertions))]
 use trek_log::log_warn;
-use trek_log::{log_debug, log_info, log_success};
+#[cfg(not(debug_assertions))]
+use trek_log::log_warn;
+use trek_log::{log_info, log_success};
 
 pub struct Server {
     port: u16,
@@ -62,7 +66,7 @@ impl Server {
         #[cfg(not(debug_assertions))]
         tokio::spawn(async move {
             if let Err(_err) = update::check_for_updates().await {
-                log_debug!("update check failed: {_err}");
+                log_warn!("update check failed: {_err}");
             }
         });
 
