@@ -10,11 +10,7 @@ fn runtime_install_cmd() -> &'static str {
         Ok("yarn") => "yarn global add @trek-cli/cli",
         Ok("npm") => "npm i -g @trek-cli/cli",
         Ok("bun") => "bun i -g @trek-cli/cli",
-        _ => match std::env::var("TREK_RUNTIME").as_deref() {
-            Ok("bun") => "bun i -g @trek-cli/cli",
-            Ok("deno") => "deno install -g npm:@trek-cli/cli",
-            _ => "https://github.com/merzen-sh/trek-cli/releases/latest",
-        },
+        _ => "https://github.com/merzen-sh/trek-cli/releases/latest",
     }
 }
 
@@ -26,7 +22,7 @@ pub async fn check_for_updates() -> anyhow::Result<()> {
         .build()?;
 
     let res = client
-        .get("https://api.github.com/repos/merzen-sh/trek-cli/releases/latest")
+        .get("https://registry.npmjs.org/@trek-cli/trek/latest")
         .header(
             reqwest::header::USER_AGENT,
             format!("trek-cli/{current_version}"),
@@ -43,15 +39,15 @@ pub async fn check_for_updates() -> anyhow::Result<()> {
 
     #[derive(serde::Deserialize)]
     struct Release {
-        tag_name: String,
+        version: String,
     }
 
     let release: Release = res.json().await?;
-    let latest_version_str = release.tag_name.trim_start_matches('v');
-    let current_version_str = current_version.trim_start_matches('v');
+    let latest_version_str = release.version;
+    let current_version_str = current_version;
 
     if let (Ok(latest), Ok(current)) = (
-        Version::parse(latest_version_str),
+        Version::parse(&latest_version_str),
         Version::parse(current_version_str),
     ) {
         if latest > current {

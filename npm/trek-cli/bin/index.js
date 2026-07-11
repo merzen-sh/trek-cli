@@ -17,26 +17,23 @@ const platforms = {
   },
 };
 
-function getRuntimeName() {
-  if (typeof Deno !== "undefined") {
-    return "deno";
-  }
-  if (typeof Bun !== "undefined") {
+function getPackageManager() {
+  const executionPath = process.argv[1] || "";
+
+  if (executionPath.includes(".bun")) {
     return "bun";
+  } else if (executionPath.includes("node_modules") || executionPath.includes("npm")) {
+    return "npm";
+  } else if (executionPath.includes("yarn")) {
+    return "yarn";
+  } else if (executionPath.includes("pnpm")) {
+    return "pnpm";
   }
-  if (typeof process !== "undefined" && process.release?.name === "node") {
-    return "node";
-  }
+
   return "unknown";
 }
 
-function getPackageManager() {
-  const ua = process.env.npm_config_user_agent ?? "";
-  const match = ua.match(/^(\w+)\//);
-  return match ? match[1] : "";
-}
-
-const runtimeName = getRuntimeName();
+const runtimeName = process.release.name;
 const pkgManager = getPackageManager();
 
 const key = `${process.platform}-${process.arch}`;
