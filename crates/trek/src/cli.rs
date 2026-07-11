@@ -48,6 +48,11 @@ enum ConfigCommands {
         #[command(subcommand)]
         key: SetKey,
     },
+    /// Show a config value
+    Show {
+        #[command(subcommand)]
+        key: ShowKey,
+    },
 }
 
 #[derive(Subcommand)]
@@ -58,6 +63,16 @@ enum SetKey {
         /// Path to the workspace directory
         path: String,
     },
+}
+
+#[derive(Subcommand)]
+enum ShowKey {
+    /// Show the workspace directory
+    #[clap(name = "workspace_dir")]
+    WorkspaceDir,
+    /// Show the config file path
+    #[clap(name = "path")]
+    Path,
 }
 
 pub fn run() -> Result<()> {
@@ -76,6 +91,18 @@ pub fn run() -> Result<()> {
                         "workspace_dir set to {}",
                         config.workspace_dir.as_deref().unwrap_or("?"),
                     );
+                }
+            },
+            ConfigCommands::Show { key } => match key {
+                ShowKey::WorkspaceDir => {
+                    let config = Config::load()?;
+                    match config.workspace_dir() {
+                        Some(dir) => println!("{dir}"),
+                        None => println!("(not set)"),
+                    }
+                }
+                ShowKey::Path => {
+                    println!("{}", Config::path().display());
                 }
             },
         },

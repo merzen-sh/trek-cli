@@ -19,7 +19,7 @@ pub struct Config {
 }
 
 impl Config {
-    fn path() -> PathBuf {
+    pub fn path() -> PathBuf {
         path_from(
             std::env::var("XDG_CONFIG_HOME").ok(),
             std::env::var("HOME").ok(),
