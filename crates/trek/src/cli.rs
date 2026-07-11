@@ -11,6 +11,10 @@ use trek_log::log_success;
 struct Cli {
     #[arg(short, long, default_value = "8080")]
     port: u16,
+    /// Open a browser when starting the dashboard (default: true). Set to
+    /// false to skip opening a browser.
+    #[arg(long, default_value_t = true, value_parser = clap::value_parser!(bool), action = clap::ArgAction::Set, global = true)]
+    browser: bool,
     #[command(subcommand)]
     command: Option<Commands>,
 }
@@ -86,7 +90,7 @@ pub fn run() -> Result<()> {
         None => {
             let mut config = Config::load()?;
             config.ensure_workspace_dir()?;
-            run_server(cli.port)?;
+            run_server(cli.port, cli.browser)?;
         }
     }
 

@@ -14,6 +14,7 @@ use trek_log::{log_debug, log_info, log_success};
 
 pub struct Server {
     port: u16,
+    browser: bool,
 }
 
 pub fn base_url() -> String {
@@ -22,8 +23,8 @@ pub fn base_url() -> String {
 }
 
 impl Server {
-    pub fn new(port: u16) -> Self {
-        Self { port }
+    pub fn new(port: u16, browser: bool) -> Self {
+        Self { port, browser }
     }
 
     pub async fn run(self) -> anyhow::Result<()> {
@@ -54,7 +55,9 @@ impl Server {
             start.elapsed().as_nanos() as f64 / 1_000_000.0
         );
 
-        let _ = open_browser(&url);
+        if self.browser {
+            let _ = open_browser(&url);
+        }
 
         #[cfg(not(debug_assertions))]
         tokio::spawn(async move {
@@ -72,11 +75,11 @@ impl Server {
     }
 }
 
-pub fn run_server(port: u16) -> anyhow::Result<()> {
+pub fn run_server(port: u16, browser: bool) -> anyhow::Result<()> {
     let rt = tokio::runtime::Builder::new_current_thread()
         .enable_io()
         .enable_time()
         .build()?;
-    rt.block_on(Server::new(port).run())?;
+    rt.block_on(Server::new(port, browser).run())?;
     Ok(())
 }

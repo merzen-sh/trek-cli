@@ -16,18 +16,39 @@ api-types:
     #!/usr/bin/env bash
     set -euo pipefail
     PORT=9090
-    cargo run -p trek --features swagger -- --port $PORT &
+    SERVER_READY=false
+
+    echo "Starting server on port $PORT"
+    cargo run -p trek --features swagger -- --port $PORT --browser false > /dev/null 2>&1 &
+
     SERVER_PID=$!
+    echo "Waiting for server"
+
     for i in $(seq 1 30); do
         if curl -sf http://localhost:$PORT/api/health > /dev/null 2>&1; then
+            SERVER_READY=true
             break
         fi
+        echo -n "."
         sleep 0.5
     done
+
+    echo ""
+
+    if [ "$SERVER_READY" = false ]; then
+        echo "Server not ready"
+        echo "Cleaning up"
+        kill $SERVER_PID 2>/dev/null || true
+        exit 1
+    fi
+
+
+    echo "Generating api-types"
     (cd packages/api-types && pnpm run generate-api-types)
     kill $SERVER_PID 2>/dev/null || true
     wait $SERVER_PID 2>/dev/null || true
-    just fmt
+    echo "Formatting"
+    pnpm exec oxfmt ./packages/api-types/src/types/api-types.d.ts
 
 [working-directory("./packages/app")]
 build-app:
@@ -61,4 +82,4 @@ shear:
     @cargo shear --fix
 
 next-test:
-	cargo nextest run --workspace
+    cargo nextest run --workspace
