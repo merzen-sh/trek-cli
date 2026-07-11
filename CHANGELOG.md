@@ -1,3 +1,18 @@
+## [0.4.2] - 2026-07-11
+
+### 🚀 Features
+
+- Add --browser flag to CLI and update justfile
+- Add show command to retrieve configuration
+
+### 🐛 Bug Fixes
+
+- Propagate update check errors
+
+### ⚙️ Miscellaneous Tasks
+
+- Version display logic in navbar
+- Ensure server process exits
 ## [0.4.1] - 2026-07-11
 
 ### 🚀 Features

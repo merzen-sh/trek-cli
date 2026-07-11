@@ -1877,7 +1877,7 @@ dependencies = [
 
 [[package]]
 name = "trek"
-version = "0.4.1"
+version = "0.4.2"
 dependencies = [
  "anyhow",
  "axum",
@@ -1902,7 +1902,7 @@ dependencies = [
 
 [[package]]
 name = "trek-configuration"
-version = "0.4.1"
+version = "0.4.2"
 dependencies = [
  "anyhow",
  "inquire",
@@ -1913,7 +1913,7 @@ dependencies = [
 
 [[package]]
 name = "trek-fxmanifest"
-version = "0.4.1"
+version = "0.4.2"
 dependencies = [
  "criterion",
  "serde",
@@ -1921,11 +1921,11 @@ dependencies = [
 
 [[package]]
 name = "trek-log"
-version = "0.4.1"
+version = "0.4.2"
 
 [[package]]
 name = "trek-scripts"
-version = "0.4.1"
+version = "0.4.2"
 dependencies = [
  "anyhow",
  "serde",
@@ -1935,7 +1935,7 @@ dependencies = [
 
 [[package]]
 name = "trek-wasm"
-version = "0.4.1"
+version = "0.4.2"
 
 [[package]]
 name = "try-lock"

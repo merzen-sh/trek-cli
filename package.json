@@ -1,6 +1,6 @@
 {
   "name": "@trek-cli/monorepo",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "scripts": {
     "dev": "pnpm --filter app dev"
   },

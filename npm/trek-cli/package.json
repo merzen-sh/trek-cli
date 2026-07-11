@@ -1,14 +1,14 @@
 {
   "name": "@trek-cli/trek",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Trek CLI - Rust binary launcher",
   "license": "MIT",
   "bin": {
     "trek": "bin/index.js"
   },
   "optionalDependencies": {
-    "@trek-cli/trek-linux-x64": "0.4.1",
-    "@trek-cli/trek-win32-x64": "0.4.1"
+    "@trek-cli/trek-linux-x64": "0.4.2",
+    "@trek-cli/trek-win32-x64": "0.4.2"
   },
   "engines": {
     "node": ">=18"
