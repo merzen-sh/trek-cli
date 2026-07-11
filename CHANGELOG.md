@@ -1,3 +1,12 @@
+## [0.4.1] - 2026-07-11
+
+### 🚀 Features
+
+- Improve update instructions by detecting the user's package manager
+
+### ⚙️ Miscellaneous Tasks
+
+- Add release type tag to npm publish
 ## [0.4.0] - 2026-07-10
 
 ### 🚀 Features
