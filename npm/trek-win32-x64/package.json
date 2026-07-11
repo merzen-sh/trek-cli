@@ -1,6 +1,6 @@
 {
   "name": "@trek-cli/trek-win32-x64",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Trek CLI - Windows x86_64 binary",
   "license": "MIT",
   "files": [
