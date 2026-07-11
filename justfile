@@ -39,9 +39,9 @@ api-types:
         echo "Server not ready"
         echo "Cleaning up"
         kill $SERVER_PID 2>/dev/null || true
+        wait $SERVER_PID 2>/dev/null || true
         exit 1
     fi
-
 
     echo "Generating api-types"
     (cd packages/api-types && pnpm run generate-api-types)
