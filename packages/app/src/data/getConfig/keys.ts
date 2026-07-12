@@ -1,3 +1,3 @@
-export const getConfigSchemaKeys = {
+export const getConfigKeys = {
   byScript: (name: string) => ["config", name] as const,
 };

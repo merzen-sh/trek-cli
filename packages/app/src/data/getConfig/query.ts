@@ -1,20 +1,11 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getConfigSchemaKeys } from "./keys";
-import { client } from "../../lib/api";
+import { getConfigKeys } from "./keys";
+import { getConfig } from "./api";
 
 export function getConfigQuery(scriptName: string) {
   return queryOptions({
-    queryKey: getConfigSchemaKeys.byScript(scriptName),
-    queryFn: async () => {
-      const { data, response } = await client.GET("/api/scripts/{name}/config", {
-        params: { path: { name: scriptName } },
-      });
-      if (!response.ok) {
-        if (response.status === 404) return null;
-        throw response;
-      }
-      return data as Record<string, unknown> | null;
-    },
+    queryKey: getConfigKeys.byScript(scriptName),
+    queryFn: () => getConfig(scriptName),
     staleTime: Infinity,
     retry: false,
   });

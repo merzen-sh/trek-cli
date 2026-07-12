@@ -1,4 +1,4 @@
-import type { SchemaProp } from "../types/config";
+import type { SchemaProp } from "~/types/config";
 
 export function flattenSchemaPaths(
   properties: Record<string, SchemaProp>,

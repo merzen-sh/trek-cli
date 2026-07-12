@@ -17,7 +17,8 @@ api-types:
     set -euo pipefail
     PORT=9090
     SERVER_READY=false
-
+    echo "Building server"
+    cargo build -p trek --features swagger 2>&1
     echo "Starting server on port $PORT"
     cargo run -p trek --features swagger -- --port $PORT --browser false > /dev/null 2>&1 &
 

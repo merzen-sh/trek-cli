@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Moon, Sun, Monitor } from "lucide-react";
 import { Button } from "ui";
-import { useAppSetting, type Theme } from "../lib/use-app-setting";
+import { useAppSetting, type Theme } from "~/lib/use-app-setting";
 
 const themes: { value: Theme; label: string; icon: typeof Sun }[] = [
   { value: "light", label: "Light", icon: Sun },

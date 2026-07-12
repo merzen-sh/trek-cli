@@ -1,2 +1,3 @@
 export { getAllowedIpsKeys } from "./keys";
-export { getAllowedIpsQuery, type AllowedIpsResponse } from "./query";
+export { getAllowedIpsQuery } from "./query";
+export { getAllowedIps, type AllowedIpsResponse } from "./api";

@@ -1,6 +1,10 @@
 use axum::Json;
 use serde::{Deserialize, Serialize};
 
+#[allow(unused_imports)]
+use serde_json::Value;
+
+#[cfg_attr(feature = "swagger", derive(utoipa::ToSchema))]
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub struct ReleaseResponse {
@@ -38,6 +42,18 @@ pub async fn fetch_and_cache() {
     }
 }
 
+#[cfg_attr(
+    feature = "swagger",
+    utoipa::path(
+        get,
+        path = "/api/releases",
+        tag = "General",
+        operation_id = "releases",
+        responses(
+            (status = 200, description = "Latest release info", body = ReleaseResponse, content_type = "application/json")
+        )
+    )
+)]
 pub async fn handler() -> Json<Option<ReleaseResponse>> {
     Json(RELEASE.lock().unwrap().clone())
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "ui";
 import { Loader2, Key } from "lucide-react";
-import { apiFetch } from "../lib/api";
+import { apiFetch } from "~/lib/api";
 
 export function OrderTokenButton({
   onSelect,

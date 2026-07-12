@@ -26,6 +26,7 @@ mod swagger {
             crate::api::theme_api::get_theme_schema,
             crate::api::theme_api::get_theme,
             crate::api::theme_api::save_theme,
+            crate::api::release_api::handler,
         )
     )]
     struct ApiDoc;

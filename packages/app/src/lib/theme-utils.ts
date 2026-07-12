@@ -1,4 +1,4 @@
-import type { SchemaProp, SchemaGroup } from "../types/config";
+import type { SchemaProp, SchemaGroup } from "~/types/config";
 
 export function resolveTheme(theme: "light" | "dark" | "system"): "light" | "dark" {
   if (theme === "system") {

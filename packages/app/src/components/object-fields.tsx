@@ -1,8 +1,8 @@
 import { Button } from "ui";
 import { Plus, Trash2 } from "lucide-react";
 import { ScalarField } from "./scalar-field";
-import { buildItemDefaults } from "../lib/config-utils";
-import type { SchemaProp } from "../types/config";
+import { buildItemDefaults } from "~/lib/config-utils";
+import type { SchemaProp } from "~/types/config";
 
 function ObjectFieldsInner({
   properties,

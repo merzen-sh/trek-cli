@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { hasPin, getPin, setPin, clearPin, client } from "../lib/api";
-import { authQuery, authKeys } from "../data/getAuth";
+import { hasPin, getPin, setPin, clearPin, client } from "~/lib/api";
+import { authQuery, authKeys } from "~/data/getAuth";
 
 export function PinAuth({ children }: { children: ReactNode }) {
   const [pin, setPinState] = useState<string | null>(() => {

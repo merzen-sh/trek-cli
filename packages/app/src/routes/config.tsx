@@ -12,16 +12,16 @@ import {
   Copy,
 } from "lucide-react";
 import { Button, Input, Badge } from "ui";
-import { useAppSetting } from "../lib/use-app-setting";
-import { getConfigSchemaQuery } from "../data/getConfigSchema/query";
-import { getConfigQuery } from "../data/getConfig/query";
-import { useSaveConfig } from "../data/saveConfig/mutation";
-import { jsonSchemaToZod } from "../lib/json-schema-to-zod";
-import { flattenSchemaPaths, buildDefaults, stripSystemFields } from "../lib/config-utils";
-import { scrollToElement } from "../lib/dom-utils";
-import { ObjectFields } from "../components/object-fields";
-import { JsonHighlight } from "../components/json-highlight";
-import type { SchemaProp } from "../types/config";
+import { useAppSetting } from "~/lib/use-app-setting";
+import { getConfigSchemaQuery } from "~/data/getConfigSchema";
+import { getConfigQuery } from "~/data/getConfig";
+import { useSaveConfig } from "~/data/saveConfig";
+import { jsonSchemaToZod } from "~/lib/json-schema-to-zod";
+import { flattenSchemaPaths, buildDefaults, stripSystemFields } from "~/lib/config-utils";
+import { scrollToElement } from "~/lib/dom-utils";
+import { ObjectFields } from "~/components/object-fields";
+import { JsonHighlight } from "~/components/json-highlight";
+import type { SchemaProp } from "~/types/config";
 
 export function ConfigEditorPage() {
   const activeScript = useAppSetting((s) => s.activeScript);

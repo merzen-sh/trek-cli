@@ -9,7 +9,7 @@ import {
   FileJson,
   Palette,
 } from "lucide-react";
-import { useAppSetting } from "../lib/use-app-setting";
+import { useAppSetting } from "~/lib/use-app-setting";
 import { cn } from "ui";
 import { SettingsDialog } from "./settings-dialog";
 

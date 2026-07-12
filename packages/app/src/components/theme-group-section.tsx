@@ -1,8 +1,8 @@
 import { Input, ColorPicker } from "ui";
 import { ShadowPicker } from "react-shadow-picker";
 import { ChevronRight, ChevronDown } from "lucide-react";
-import { groupKeyToCssVar, GROUP_LABELS } from "../lib/theme-utils";
-import type { SchemaGroup } from "../types/config";
+import { groupKeyToCssVar, GROUP_LABELS } from "~/lib/theme-utils";
+import type { SchemaGroup } from "~/types/config";
 
 export function ThemeGroupSection({
   group,

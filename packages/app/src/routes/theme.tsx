@@ -2,15 +2,15 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "ui";
 import { Check, RotateCcw, Sun, Loader2 } from "lucide-react";
-import { useAppSetting } from "../lib/use-app-setting";
-import { getThemeSchemaQuery } from "../data/getThemeSchema/query";
-import { getThemeQuery } from "../data/getTheme/query";
-import { useSaveTheme } from "../data/saveTheme/mutation";
-import { jsonSchemaToZod } from "../lib/json-schema-to-zod";
-import { buildThemeDefaults, groupKeyToCssVar } from "../lib/theme-utils";
-import { ThemeGroupSection } from "../components/theme-group-section";
-import { JsonHighlight } from "../components/json-highlight";
-import type { SchemaGroup } from "../types/config";
+import { useAppSetting } from "~/lib/use-app-setting";
+import { getThemeSchemaQuery } from "~/data/getThemeSchema";
+import { getThemeQuery } from "~/data/getTheme";
+import { useSaveTheme } from "~/data/saveTheme";
+import { jsonSchemaToZod } from "~/lib/json-schema-to-zod";
+import { buildThemeDefaults, groupKeyToCssVar } from "~/lib/theme-utils";
+import { ThemeGroupSection } from "~/components/theme-group-section";
+import { JsonHighlight } from "~/components/json-highlight";
+import type { SchemaGroup } from "~/types/config";
 
 export function ThemeEditorPage() {
   const activeScript = useAppSetting((s) => s.activeScript);

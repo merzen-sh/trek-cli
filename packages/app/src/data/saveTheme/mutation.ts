@@ -1,16 +1,14 @@
-import { useMutation } from "@tanstack/react-query";
-import { client } from "../../lib/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { getThemeKeys } from "~/data/getTheme";
+import { saveTheme } from "./api";
 
 export function useSaveTheme(scriptName: string) {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async (data: unknown) => {
-      const body = { $schema: "../schema/theme_schema.json", ...(data as Record<string, unknown>) };
-      const { data: result, response } = await client.POST("/api/scripts/{name}/theme", {
-        params: { path: { name: scriptName } },
-        body,
-      });
-      if (!response.ok) throw response;
-      return result;
+    mutationFn: (data: unknown) => saveTheme(scriptName, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: getThemeKeys.byScript(scriptName) });
     },
   });
 }

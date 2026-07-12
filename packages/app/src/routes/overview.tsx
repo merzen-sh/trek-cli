@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAppSetting } from "../lib/use-app-setting";
-import { getScriptsQuery } from "../data/getScripts/query";
-import { getOrdersQuery } from "../data/getOrders/query";
+import { useAppSetting } from "~/lib/use-app-setting";
+import { getScriptsQuery } from "~/data/getScripts";
+import { getOrdersQuery } from "~/data/getOrders";
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from "ui";
 import { Download } from "lucide-react";
-import { fieldLabel, isFieldVisible } from "../lib/labels";
+import { fieldLabel, isFieldVisible } from "~/lib/labels";
 
 export function OverviewPage() {
   const activeScript = useAppSetting((s) => s.activeScript);

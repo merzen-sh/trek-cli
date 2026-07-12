@@ -52,6 +52,22 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/releases": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["releases"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/scripts": {
     parameters: {
       query?: never;
@@ -155,6 +171,12 @@ export interface components {
     CheckPinPayload: {
       pin: string;
     };
+    ReleaseResponse: {
+      body: string;
+      html_url: string;
+      name: string;
+      tag_name: string;
+    };
   };
   responses: never;
   parameters: never;
@@ -245,6 +267,26 @@ export interface operations {
         };
         content: {
           "application/json": unknown;
+        };
+      };
+    };
+  };
+  releases: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Latest release info */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReleaseResponse"];
         };
       };
     };

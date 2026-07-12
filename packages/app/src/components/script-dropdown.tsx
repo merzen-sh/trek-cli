@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 import { cn } from "ui";
-import { useAppSetting } from "../lib/use-app-setting";
-import { getScriptsQuery } from "../data/getScripts/query";
+import { useAppSetting } from "~/lib/use-app-setting";
+import { getScriptsQuery } from "~/data/getScripts";
 
 export function ScriptDropdown() {
   const activeScript = useAppSetting((s) => s.activeScript);

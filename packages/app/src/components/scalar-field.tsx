@@ -1,6 +1,6 @@
 import { Input } from "ui";
 import { OrderTokenButton } from "./order-token-button";
-import type { SchemaProp } from "../types/config";
+import type { SchemaProp } from "~/types/config";
 
 export function ScalarField({
   name,

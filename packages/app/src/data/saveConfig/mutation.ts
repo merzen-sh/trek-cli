@@ -1,19 +1,14 @@
-import { useMutation } from "@tanstack/react-query";
-import { client } from "../../lib/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { getConfigKeys } from "~/data/getConfig";
+import { saveConfig } from "./api";
 
 export function useSaveConfig(scriptName: string) {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async (data: unknown) => {
-      const body = {
-        $schema: "../schema/config_schema.json",
-        ...(data as Record<string, unknown>),
-      };
-      const { data: result, response } = await client.POST("/api/scripts/{name}/config", {
-        params: { path: { name: scriptName } },
-        body,
-      });
-      if (!response.ok) throw response;
-      return result;
+    mutationFn: (data: unknown) => saveConfig(scriptName, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: getConfigKeys.byScript(scriptName) });
     },
   });
 }

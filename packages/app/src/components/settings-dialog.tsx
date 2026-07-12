@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Trash2, Plus, Palette, Shield } from "lucide-react";
 import { cn, Card, CardHeader, CardTitle, CardContent, Button, Input } from "ui";
-import { useAppSetting } from "../lib/use-app-setting";
-import { getAllowedIpsQuery } from "../data/getAllowedIps";
-import { useAddAllowedIp, useDeleteAllowedIp } from "../data/saveAllowedIps";
+import { useAppSetting } from "~/lib/use-app-setting";
+import { getAllowedIpsQuery } from "~/data/getAllowedIps";
+import { useAddAllowedIp, useDeleteAllowedIp } from "~/data/saveAllowedIps";
 
 interface SettingsDialogProps {
   open: boolean;

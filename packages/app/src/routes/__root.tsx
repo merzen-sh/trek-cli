@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { Outlet } from "@tanstack/react-router";
-import { useAppSetting } from "../lib/use-app-setting";
-import { Navbar } from "../components/navbar";
-import { Sidebar } from "../components/sidebar";
-import { PinAuth } from "../components/pin-auth";
-import { resolveTheme, applyThemeSmooth } from "../lib/theme-utils";
+import { useAppSetting } from "~/lib/use-app-setting";
+import { Navbar } from "~/components/navbar";
+import { Sidebar } from "~/components/sidebar";
+import { PinAuth } from "~/components/pin-auth";
+import { resolveTheme, applyThemeSmooth } from "~/lib/theme-utils";
 
 export function RootLayout() {
   const theme = useAppSetting((s) => s.theme);

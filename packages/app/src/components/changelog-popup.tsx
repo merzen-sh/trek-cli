@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "ui";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { releaseQuery } from "../data/getReleases/query";
+import { releaseQuery } from "~/data/getReleases";
 
 const DISMISSED_KEY = "trek-cli-changelog-dismissed";
 

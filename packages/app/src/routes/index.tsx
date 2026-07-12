@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAppSetting } from "../lib/use-app-setting";
-import { getScriptsQuery } from "../data/getScripts/query";
-import { getOrdersQuery } from "../data/getOrders/query";
+import { useAppSetting } from "~/lib/use-app-setting";
+import { getScriptsQuery } from "~/data/getScripts";
+import { getOrdersQuery } from "~/data/getOrders";
 import { Card, CardContent, CardHeader, CardTitle } from "ui";
 import { Package, ShoppingCart, CheckCircle } from "lucide-react";
 

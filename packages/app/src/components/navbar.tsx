@@ -1,6 +1,6 @@
 import { PanelLeftClose, PanelLeft } from "lucide-react";
 import { Button } from "ui";
-import { useAppSetting } from "../lib/use-app-setting";
+import { useAppSetting } from "~/lib/use-app-setting";
 import { ThemeSwitcher } from "./theme-switcher";
 import { ScriptDropdown } from "./script-dropdown";
 
