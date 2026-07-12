@@ -4,5 +4,6 @@ pub mod config_api;
 pub mod health_api;
 pub mod ip_filter_api;
 pub mod proxy_api;
+pub mod release_api;
 pub mod scripts_api;
 pub mod theme_api;

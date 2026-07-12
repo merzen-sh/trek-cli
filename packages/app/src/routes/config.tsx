@@ -70,7 +70,8 @@ export function ConfigEditorPage() {
   useEffect(() => {
     if (schema) {
       const baseDefaults = buildDefaults(properties, required);
-      setValues(config ? { ...baseDefaults, ...config } : baseDefaults);
+      const { $schema: _, ...configData } = config ?? {};
+      setValues(configData ? { ...baseDefaults, ...configData } : baseDefaults);
       setErrors({});
       setSaved(false);
     }
@@ -91,7 +92,8 @@ export function ConfigEditorPage() {
   const handleReset = useCallback(() => {
     if (schema) {
       const baseDefaults = buildDefaults(properties, required);
-      setValues(config ? { ...baseDefaults, ...config } : baseDefaults);
+      const { $schema: _, ...configData } = config ?? {};
+      setValues(configData ? { ...baseDefaults, ...configData } : baseDefaults);
       setErrors({});
       setSaved(false);
     }
@@ -176,12 +178,12 @@ export function ConfigEditorPage() {
           {isFocusModeActive && focusPath && (
             <Badge
               variant="secondary"
-              className="gap-1.5 py-1 px-2.5 text-xs bg-amber-500/10 text-amber-500 border border-amber-500/20"
+              className="gap-1.5 py-1 px-2.5 text-xs bg-primary/10 text-primary border border-primary/20"
             >
               <EyeOff className="h-3 w-3" /> {focusPath}
               <button
                 onClick={() => setFocusPath(null)}
-                className="ml-1 underline hover:text-amber-400 font-bold"
+                className="ml-1 underline hover:text-primary font-bold"
               >
                 Clear
               </button>
@@ -300,7 +302,7 @@ export function ConfigEditorPage() {
                   <button
                     type="button"
                     onClick={() => setIsFocusModeActive(true)}
-                    className={`text-[10px] font-medium py-1 rounded transition-all ${isFocusModeActive ? "bg-amber-500 text-white shadow-sm font-bold" : "text-muted-foreground hover:text-foreground"}`}
+                    className={`text-[10px] font-medium py-1 rounded transition-all ${isFocusModeActive ? "bg-primary/10 text-primary shadow-sm font-bold" : "text-muted-foreground hover:text-foreground"}`}
                   >
                     Focus
                   </button>
@@ -322,7 +324,7 @@ export function ConfigEditorPage() {
                         onClick={() => handleNavItemClick(item.path)}
                         className={`w-full text-left py-1.5 px-2 rounded transition-colors group flex items-center justify-between font-mono ${
                           isCurrentlyFocused && isFocusModeActive
-                            ? "bg-amber-500 text-white font-semibold"
+                            ? "bg-primary/10 text-primary font-semibold"
                             : isCurrentlyFocused && !isFocusModeActive
                               ? "bg-muted text-foreground font-semibold border-l-2 border-primary"
                               : "hover:bg-muted text-muted-foreground hover:text-foreground"
@@ -331,7 +333,7 @@ export function ConfigEditorPage() {
                       >
                         <div className="flex items-center gap-1 truncate">
                           <ChevronRight
-                            className={`h-3 w-3 shrink-0 ${isCurrentlyFocused && isFocusModeActive ? "text-white" : "opacity-40"}`}
+                            className={`h-3 w-3 shrink-0 ${isCurrentlyFocused && isFocusModeActive ? "text-primary" : "opacity-40"}`}
                           />
                           <span className="truncate" title={item.path}>
                             {item.label}

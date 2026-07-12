@@ -3,17 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "ui";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { releaseByTagQuery } from "../data/getReleases/query";
+import { releaseQuery } from "../data/getReleases/query";
 
 const DISMISSED_KEY = "trek-cli-changelog-dismissed";
 
 export function ChangelogPopup() {
   const appVersion = window.__TREK_CLI__?.App?.version;
 
-  const { data: release } = useQuery({
-    ...releaseByTagQuery(appVersion ?? ""),
-    enabled: !!appVersion,
-  });
+  const { data: release } = useQuery(releaseQuery());
 
   const [dismissed, setDismissed] = useState(() =>
     appVersion ? localStorage.getItem(DISMISSED_KEY) === appVersion : true,

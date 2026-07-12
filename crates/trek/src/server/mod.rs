@@ -63,6 +63,8 @@ impl Server {
             let _ = open_browser(&url);
         }
 
+        crate::api::release_api::fetch_and_cache().await;
+
         #[cfg(not(debug_assertions))]
         tokio::spawn(async move {
             if let Err(_err) = update::check_for_updates().await {

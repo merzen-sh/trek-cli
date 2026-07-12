@@ -68,6 +68,7 @@ pub fn create() -> Router {
                 .post(crate::api::ip_filter_api::add)
                 .delete(crate::api::ip_filter_api::delete),
         )
+        .route("/api/releases", get(crate::api::release_api::handler))
         .route(
             "/external/api/*api_path",
             any(crate::api::proxy_api::handler),

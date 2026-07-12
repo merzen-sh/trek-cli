@@ -8,19 +8,15 @@ export interface Release {
   html_url: string;
 }
 
-export function releaseByTagQuery(version: string) {
+export function releaseQuery() {
   return queryOptions({
-    queryKey: releasesKeys.byTag(version),
+    queryKey: releasesKeys.all,
     queryFn: async ({ signal }) => {
-      const res = await fetch(
-        `https://api.github.com/repos/merzen-sh/trek-cli/releases/tags/v${version}`,
-        { headers: { "User-Agent": "trek-cli" }, signal },
-      );
-      if (res.status === 404) return null;
+      const res = await fetch("/api/releases", { signal });
       if (!res.ok) throw new Error("Failed to fetch release");
-      return res.json() as Promise<Release>;
+      return res.json() as Promise<Release | null>;
     },
-    staleTime: 1000 * 60 * 60,
+    staleTime: Infinity,
     retry: false,
   });
 }

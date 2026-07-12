@@ -6,10 +6,10 @@ use trek_log::log_warn;
 #[cfg(not(debug_assertions))]
 fn runtime_install_cmd() -> &'static str {
     match std::env::var("TREK_PACKAGE_MANAGER").as_deref() {
-        Ok("pnpm") => "pnpm add -g @trek-cli/cli",
-        Ok("yarn") => "yarn global add @trek-cli/cli",
-        Ok("npm") => "npm i -g @trek-cli/cli",
-        Ok("bun") => "bun i -g @trek-cli/cli",
+        Ok("pnpm") => "pnpm add -g @trek-cli/trek",
+        Ok("yarn") => "yarn global add @trek-cli/trek",
+        Ok("npm") => "npm i -g @trek-cli/trek",
+        Ok("bun") => "bun i -g @trek-cli/trek",
         _ => "https://github.com/merzen-sh/trek-cli/releases/latest",
     }
 }

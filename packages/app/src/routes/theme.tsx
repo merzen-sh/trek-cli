@@ -42,12 +42,13 @@ export function ThemeEditorPage() {
   useEffect(() => {
     if (schema) {
       const baseDefaults = buildThemeDefaults(groups);
-      if (theme) {
+      const { $schema: _, ...themeData } = (theme ?? {}) as Record<string, Record<string, unknown>>;
+      if (Object.keys(themeData).length > 0) {
         const merged: Record<string, Record<string, unknown>> = {};
         for (const group of Object.keys(baseDefaults)) {
           merged[group] = {
             ...baseDefaults[group],
-            ...(theme as Record<string, Record<string, unknown>>)[group],
+            ...themeData[group],
           };
         }
         setValues(merged);
@@ -76,12 +77,13 @@ export function ThemeEditorPage() {
   const handleReset = useCallback(() => {
     if (schema) {
       const baseDefaults = buildThemeDefaults(groups);
-      if (theme) {
+      const { $schema: _, ...themeData } = (theme ?? {}) as Record<string, Record<string, unknown>>;
+      if (Object.keys(themeData).length > 0) {
         const merged: Record<string, Record<string, unknown>> = {};
         for (const group of Object.keys(baseDefaults)) {
           merged[group] = {
             ...baseDefaults[group],
-            ...(theme as Record<string, Record<string, unknown>>)[group],
+            ...themeData[group],
           };
         }
         setValues(merged);

@@ -90,7 +90,7 @@ pub async fn get_config(Path(name): Path<String>) -> Response {
         Ok(d) => d,
         Err(r) => return r,
     };
-    let path = dir.join("config.json");
+    let path = dir.join("config/config.json");
     if !path.is_file() {
         return Json(serde_json::json!({})).into_response();
     }
@@ -154,7 +154,9 @@ pub async fn save_config(Path(name): Path<String>, req: Request) -> Response {
         }
     };
 
-    let path = dir.join("config.json");
+    let config_dir = dir.join("config");
+    let _ = std::fs::create_dir_all(&config_dir);
+    let path = config_dir.join("config.json");
     match std::fs::write(&path, &formatted) {
         Ok(_) => {
             log_success!("Configuration saved to {}", path.to_string_lossy());
