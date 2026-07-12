@@ -1,4 +1,4 @@
-name: release-wip
+name: release
 
 on:
   workflow_dispatch:
