@@ -64,12 +64,27 @@ Two workspaces sharing the root — **Cargo** (`crates/*`) and **pnpm** (`packag
 - `erasableSyntaxOnly` → no `enum`, no `namespace`, no `parameter properties`
 - `noUnusedLocals` + `noUnusedParameters` — remove unused imports/vars
 - Components use `React.forwardRef` + `cn()` + CVA variants (see `packages/ui/` for patterns)
-- Data fetching via TanStack Query with colocated files: `data/<name>/keys.ts` + `query.ts`
+- All imports use `~/` prefix alias mapping to `src/` (e.g. `import { foo } from "~/lib/api"`)
 - Routes defined in `packages/app/src/router.tsx` using TanStack Router `createRoute` + `createRootRoute`
 - Tailwind CSS 4 with `@tailwindcss/vite` plugin
 - State management: `zustand` for stores, `zod` for validation
-- Typed API client via `openapi-fetch` against the CLI proxy
+- Typed API client via `openapi-fetch` against the CLI proxy; `apiFetch()` for endpoints not in OpenAPI spec
 - React Compiler via `babel-plugin-react-compiler` + `@rolldown/plugin-babel`
+
+### Data layer pattern
+
+Every data domain lives in `packages/app/src/data/<name>/` with four files:
+
+| file       | purpose                                                                                |
+| ---------- | -------------------------------------------------------------------------------------- |
+| `api.ts`   | standalone typed fetch function using `client` or `apiFetch` from `~/lib/api`          |
+| `keys.ts`  | TanStack Query key factory (`all`, `byScript`, etc.)                                   |
+| `query.ts` | `queryOptions()` wrapping the api function, or `mutation.ts` with `useMutation()` hook |
+| `index.ts` | barrel re-export of all public symbols                                                 |
+
+Consumers import only from the barrel: `import { getScriptsQuery } from "~/data/getScripts"`.
+
+**Adding a new endpoint:** create `api.ts` with a function that calls `client.GET/POST(...)` (typed via openapi-fetch) or `apiFetch(...)` (for non-OpenAPI routes), then `query.ts` wraps it in `queryOptions({ queryKey, queryFn })`.
 
 ## Rust conventions
 
@@ -78,6 +93,14 @@ Two workspaces sharing the root — **Cargo** (`crates/*`) and **pnpm** (`packag
 - `#[serde(default)]` for backward-compatible config field additions
 - `dotenvy::dotenv().ok()` for optional `.env` loading (not required)
 - `trek-fxmanifest` has optional `serialize` feature (serde derive); used by `trek-scripts`
+
+### Adding a new API endpoint
+
+1. Create handler in `crates/trek/src/api/<name>_api.rs` with `#[cfg_attr(feature = "swagger", utoipa::path(...))]` annotation
+2. Register the route in `crates/trek/src/server/router.rs` via `route("/api/...", get/post(...))`
+3. Add handler to the `#[openapi(paths(...))]` list in the `ApiDoc` struct (same file)
+4. Declare the module in `crates/trek/src/api/mod.rs`
+5. Run `just api-types` to regenerate TypeScript types
 
 ## Testing
 
