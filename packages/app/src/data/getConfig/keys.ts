@@ -1,3 +1,3 @@
 export const getConfigKeys = {
-  byScript: (name: string) => ["config", name] as const,
+  byScript: (name: string, configType: string = "server") => ["config", name, configType] as const,
 };
