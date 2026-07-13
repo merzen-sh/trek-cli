@@ -1,5 +1,5 @@
 default:
-    @just --list
+    @command -v fzf >/dev/null 2>&1 && just --choose || just --list
 
 dev:
     @cargo run -p trek --features swagger

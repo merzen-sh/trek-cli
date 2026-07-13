@@ -1,12 +1,21 @@
 import { client } from "~/lib/api";
 
-export async function saveConfig(scriptName: string, data: unknown): Promise<unknown> {
+const schemaRefs: Record<string, string> = {
+  server: "../schema/config_server_schema.json",
+  client: "../schema/config_client_schema.json",
+};
+
+export async function saveConfig(
+  scriptName: string,
+  data: unknown,
+  configType: string = "server",
+): Promise<unknown> {
   const body = {
-    $schema: "../schema/config_schema.json",
+    $schema: schemaRefs[configType] ?? schemaRefs.server,
     ...(data as Record<string, unknown>),
   };
   const { data: result, response } = await client.POST("/api/scripts/{name}/config", {
-    params: { path: { name: scriptName } },
+    params: { path: { name: scriptName }, query: { type: configType } },
     body,
   });
   if (!response.ok) throw response;

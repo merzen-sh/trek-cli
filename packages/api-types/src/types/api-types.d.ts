@@ -357,7 +357,10 @@ export interface operations {
   };
   get_config: {
     parameters: {
-      query?: never;
+      query?: {
+        /** @description Config type: server or client */
+        type?: string;
+      };
       header?: never;
       path: {
         /** @description Script name */
@@ -394,7 +397,10 @@ export interface operations {
   };
   save_config: {
     parameters: {
-      query?: never;
+      query?: {
+        /** @description Config type: server or client */
+        type?: string;
+      };
       header?: never;
       path: {
         /** @description Script name */
@@ -443,7 +449,10 @@ export interface operations {
   };
   get_schema: {
     parameters: {
-      query?: never;
+      query?: {
+        /** @description Config type: server or client */
+        type?: string;
+      };
       header?: never;
       path: {
         /** @description Script name */
@@ -462,7 +471,7 @@ export interface operations {
           "application/json": unknown;
         };
       };
-      /** @description Script or config_schema.json not found */
+      /** @description Script or schema file not found */
       404: {
         headers: {
           [name: string]: unknown;

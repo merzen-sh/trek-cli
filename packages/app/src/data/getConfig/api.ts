@@ -1,8 +1,11 @@
 import { client } from "~/lib/api";
 
-export async function getConfig(scriptName: string): Promise<Record<string, unknown> | null> {
+export async function getConfig(
+  scriptName: string,
+  configType: string = "server",
+): Promise<Record<string, unknown> | null> {
   const { data, response } = await client.GET("/api/scripts/{name}/config", {
-    params: { path: { name: scriptName } },
+    params: { path: { name: scriptName }, query: { type: configType } },
   });
   if (!response.ok) {
     if (response.status === 404) return null;

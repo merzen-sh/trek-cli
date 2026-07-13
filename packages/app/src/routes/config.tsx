@@ -10,6 +10,8 @@ import {
   EyeOff,
   Sliders,
   Copy,
+  Server,
+  Monitor,
 } from "lucide-react";
 import { Button, Input, Badge } from "ui";
 import { useAppSetting } from "~/lib/use-app-setting";
@@ -27,17 +29,25 @@ export function ConfigEditorPage() {
   const activeScript = useAppSetting((s) => s.activeScript);
   const queryClient = useQueryClient();
 
-  const { data: schema, isLoading: schemaLoading } = useQuery(
-    getConfigSchemaQuery(activeScript ?? ""),
+  const [configType, setConfigType] = useState<"server" | "client">("server");
+
+  const {
+    data: schema,
+    isLoading: schemaLoading,
+    isFetching: schemaFetching,
+  } = useQuery(getConfigSchemaQuery(activeScript ?? "", configType));
+  const { data: config, isLoading: configLoading } = useQuery(
+    getConfigQuery(activeScript ?? "", configType),
   );
-  const { data: config, isLoading: configLoading } = useQuery(getConfigQuery(activeScript ?? ""));
-  const saveMutation = useSaveConfig(activeScript ?? "");
+  const saveMutation = useSaveConfig(activeScript ?? "", configType);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [focusPath, setFocusPath] = useState<string | null>(null);
   const [isFocusModeActive, setIsFocusModeActive] = useState(false);
   const [previewTab, setPreviewTab] = useState<"json" | "tree">("json");
   const [copied, setCopied] = useState(false);
+
+  const isSwitchingType = schemaFetching && schema === undefined;
 
   const zodSchema = useMemo(() => {
     if (!schema) return null;
@@ -54,6 +64,12 @@ export function ConfigEditorPage() {
   const [values, setValues] = useState<Record<string, unknown>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    setValues({});
+    setErrors({});
+    setSaved(false);
+  }, [configType]);
 
   const noticeProp = properties["notice"];
   const noticeMessage = noticeProp?.system ? ((noticeProp.default as string) ?? "") : "";
@@ -115,7 +131,9 @@ export function ConfigEditorPage() {
     saveMutation.mutate(stripSystemFields(properties, result.data as Record<string, unknown>), {
       onSuccess: () => {
         setSaved(true);
-        queryClient.invalidateQueries({ queryKey: getConfigQuery(activeScript ?? "").queryKey });
+        queryClient.invalidateQueries({
+          queryKey: getConfigQuery(activeScript ?? "", configType).queryKey,
+        });
       },
     });
   }
@@ -142,7 +160,7 @@ export function ConfigEditorPage() {
     );
   }
 
-  if (schemaLoading || configLoading) {
+  if (schemaLoading || configLoading || isSwitchingType) {
     return (
       <div className="flex h-full items-center justify-center gap-2">
         <Loader2 className="h-4 w-4 animate-spin" />
@@ -153,7 +171,7 @@ export function ConfigEditorPage() {
 
   if (schema === null || !zodSchema) {
     return (
-      <div className="flex h-full items-center justify-center">
+      <div className="flex h-full flex-col items-center justify-center gap-4">
         <p className="text-muted-foreground">No valid config schema found</p>
       </div>
     );
@@ -207,6 +225,33 @@ export function ConfigEditorPage() {
             {saveMutation.isPending ? "Saving..." : "Save"}
           </Button>
         </div>
+      </div>
+
+      <div className="flex border-b bg-muted/30 px-6">
+        <button
+          type="button"
+          onClick={() => setConfigType("server")}
+          className={`flex items-center gap-1.5 px-4 py-2 text-xs font-medium border-b-2 transition-colors ${
+            configType === "server"
+              ? "border-primary text-foreground"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Server className="h-3.5 w-3.5" />
+          Server Config
+        </button>
+        <button
+          type="button"
+          onClick={() => setConfigType("client")}
+          className={`flex items-center gap-1.5 px-4 py-2 text-xs font-medium border-b-2 transition-colors ${
+            configType === "client"
+              ? "border-primary text-foreground"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Monitor className="h-3.5 w-3.5" />
+          Client Config
+        </button>
       </div>
 
       {saveMutation.isError && (

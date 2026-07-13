@@ -25,7 +25,7 @@ serde = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
 semver = "1.0"
 anyhow = "1.0"
-axum = { version = "0.7", default-features = false, features = ["json", "tokio", "http1"] }
+axum = { version = "0.7", default-features = false, features = ["json", "query", "tokio", "http1"] }
 bytes = "1"
 http-body-util = "0.1"
 colorgrad = "0.8"

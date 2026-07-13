@@ -2,13 +2,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getConfigKeys } from "~/data/getConfig";
 import { saveConfig } from "./api";
 
-export function useSaveConfig(scriptName: string) {
+export function useSaveConfig(scriptName: string, configType: string = "server") {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: unknown) => saveConfig(scriptName, data),
+    mutationFn: (data: unknown) => saveConfig(scriptName, data, configType),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: getConfigKeys.byScript(scriptName) });
+      queryClient.invalidateQueries({ queryKey: getConfigKeys.byScript(scriptName, configType) });
     },
   });
 }

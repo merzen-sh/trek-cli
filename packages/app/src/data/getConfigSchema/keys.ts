@@ -1,3 +1,3 @@
 export const getConfigSchemaKeys = {
-  byScript: (name: string) => ["config-schema", name] as const,
+  byScript: (name: string, configType: string = "server") => ["config-schema", name, configType] as const,
 };

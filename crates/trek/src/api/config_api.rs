@@ -1,11 +1,36 @@
 use axum::Json;
-use axum::extract::{Path, Request};
+use axum::extract::{Path, Query, Request};
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use http_body_util::BodyExt;
+use serde::Deserialize;
 use serde_json::Value;
 use std::path::PathBuf;
 use trek_log::log_success;
+
+#[derive(Deserialize, Default)]
+pub struct ConfigTypeQuery {
+    #[serde(rename = "type", default = "default_config_type")]
+    pub config_type: String,
+}
+
+fn default_config_type() -> String {
+    "server".to_string()
+}
+
+fn config_filename(config_type: &str) -> &'static str {
+    match config_type {
+        "client" => "config_client.json",
+        _ => "config_server.json",
+    }
+}
+
+fn schema_filename(config_type: &str) -> &'static str {
+    match config_type {
+        "client" => "config_client_schema.json",
+        _ => "config_server_schema.json",
+    }
+}
 
 fn prevent_traversal(name: &str) -> Result<PathBuf, Response> {
     if name.contains('/') || name.contains('\\') || name.contains("..") {
@@ -36,23 +61,25 @@ fn script_dir(name: &str) -> Result<PathBuf, Response> {
         path = "/api/scripts/{name}/config-schema",
         tag = "Config",
         params(
-            ("name" = String, Path, description = "Script name")
+            ("name" = String, Path, description = "Script name"),
+            ("type" = Option<String>, Query, description = "Config type: server or client")
         ),
         responses(
             (status = 200, description = "Config schema JSON", body = Value, content_type = "application/json"),
-            (status = 404, description = "Script or config_schema.json not found"),
+            (status = 404, description = "Script or schema file not found"),
             (status = 500, description = "Internal server error")
         )
     )
 )]
-pub async fn get_schema(Path(name): Path<String>) -> Response {
+pub async fn get_schema(Path(name): Path<String>, Query(query): Query<ConfigTypeQuery>) -> Response {
     let dir = match script_dir(&name) {
         Ok(d) => d,
         Err(r) => return r,
     };
-    let path = dir.join("schema/config_schema.json");
+    let fname = schema_filename(&query.config_type);
+    let path = dir.join("schema").join(fname);
     if !path.is_file() {
-        return (StatusCode::NOT_FOUND, "config_schema.json not found").into_response();
+        return (StatusCode::NOT_FOUND, format!("{fname} not found")).into_response();
     }
     let content = match std::fs::read_to_string(&path) {
         Ok(c) => c,
@@ -76,7 +103,8 @@ pub async fn get_schema(Path(name): Path<String>) -> Response {
         path = "/api/scripts/{name}/config",
         tag = "Config",
         params(
-            ("name" = String, Path, description = "Script name")
+            ("name" = String, Path, description = "Script name"),
+            ("type" = Option<String>, Query, description = "Config type: server or client")
         ),
         responses(
             (status = 200, description = "Current config JSON", body = Value, content_type = "application/json"),
@@ -85,12 +113,13 @@ pub async fn get_schema(Path(name): Path<String>) -> Response {
         )
     )
 )]
-pub async fn get_config(Path(name): Path<String>) -> Response {
+pub async fn get_config(Path(name): Path<String>, Query(query): Query<ConfigTypeQuery>) -> Response {
     let dir = match script_dir(&name) {
         Ok(d) => d,
         Err(r) => return r,
     };
-    let path = dir.join("config/config.json");
+    let fname = config_filename(&query.config_type);
+    let path = dir.join("config").join(fname);
     if !path.is_file() {
         return Json(serde_json::json!({})).into_response();
     }
@@ -116,7 +145,8 @@ pub async fn get_config(Path(name): Path<String>) -> Response {
         path = "/api/scripts/{name}/config",
         tag = "Config",
         params(
-            ("name" = String, Path, description = "Script name")
+            ("name" = String, Path, description = "Script name"),
+            ("type" = Option<String>, Query, description = "Config type: server or client")
         ),
         request_body(content = Value, content_type = "application/json", description = "Config JSON to save"),
         responses(
@@ -127,7 +157,7 @@ pub async fn get_config(Path(name): Path<String>) -> Response {
         )
     )
 )]
-pub async fn save_config(Path(name): Path<String>, req: Request) -> Response {
+pub async fn save_config(Path(name): Path<String>, Query(query): Query<ConfigTypeQuery>, req: Request) -> Response {
     let dir = match script_dir(&name) {
         Ok(d) => d,
         Err(r) => return r,
@@ -154,9 +184,10 @@ pub async fn save_config(Path(name): Path<String>, req: Request) -> Response {
         }
     };
 
+    let fname = config_filename(&query.config_type);
     let config_dir = dir.join("config");
     let _ = std::fs::create_dir_all(&config_dir);
-    let path = config_dir.join("config.json");
+    let path = config_dir.join(fname);
     match std::fs::write(&path, &formatted) {
         Ok(_) => {
             log_success!("Configuration saved to {}", path.to_string_lossy());
