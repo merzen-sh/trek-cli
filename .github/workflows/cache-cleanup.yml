@@ -10,17 +10,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Delete all caches for this branch
+      - name: Install gh extension
+        run: gh extension install actions/gh-actions-cache
+
+      - name: Delete branch caches
         run: |
-          gh extension install actions/gh-actions-cache
           gh actions-cache list \
             --repo "${{ github.repository }}" \
             --branch "${{ github.head_ref }}" \
             --limit 100 \
-            --json id,key \
-            --jq '.[].key' \
+            | awk '{print $1}' \
             | xargs -I{} sh -c \
               'gh actions-cache delete "{}" --repo "${{ github.repository }}" --branch "${{ github.head_ref }}" --confirm' \
               || true
-        env:
-          GH_TOKEN: ${{ github.token }}
+
+      - name: Delete PR merge caches
+        run: |
+          gh actions-cache list \
+            --repo "${{ github.repository }}" \
+            --branch "refs/pull/${{ github.event.number }}/merge" \
+            --limit 100 \
+            | awk '{print $1}' \
+            | xargs -I{} sh -c \
+              'gh actions-cache delete "{}" --repo "${{ github.repository }}" --branch "refs/pull/${{ github.event.number }}/merge" --confirm' \
+              || true
+    env:
+      GH_TOKEN: ${{ github.token }}
