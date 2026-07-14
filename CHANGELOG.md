@@ -1,3 +1,21 @@
+## [0.5.0] - 2026-07-14
+
+### 🚀 Features
+
+- Restructure config/theme storage, add release API, update UI schema handling and theme colors.
+- Allow switching between server and client config when editing (#20)
+
+### 🚜 Refactor
+
+- Switch package manager detection
+- Remove redundant layout and theme type definitions
+- Migrate data layer to modular API client
+
+### ⚙️ Miscellaneous Tasks
+
+- Formalize data layer architectural patterns
+- Rename release-wip workflow to release
+- Prevent cache buildup by also cleaning PR merge branch caches (#21)
 ## [0.4.2] - 2026-07-11
 
 ### 🚀 Features
