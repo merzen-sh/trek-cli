@@ -2,5 +2,5 @@
   "title": "Trek CLI",
   "icon": "Terminal",
   "root": true,
-  "pages": ["index"]
+  "pages": ["index", "install", "cli"]
 }

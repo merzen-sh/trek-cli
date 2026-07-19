@@ -1,0 +1,102 @@
+---
+title: CLI Reference
+description: Installing and using Trek CLI
+---
+
+Trek CLI is a Rust-based command-line tool for managing FiveM script workspaces. It
+provides a local HTTP dashboard, script scanning, configuration
+management, and authentication with the trek service.
+
+## Usage
+
+```
+trek [OPTIONS] [COMMAND]
+```
+
+### Options
+
+| Flag | Default | Description |
+| ---- | ------- | ----------- |
+| `-p, --port <PORT>` | `8080` | Port for the HTTP dashboard |
+| `--browser <BOOL>` | `true` | Auto-open browser on start |
+
+### Commands
+
+#### `trek login`
+
+Authenticates with the trek service via OAuth-like device flow:
+
+1. Creates a challenge on the server
+2. Opens your browser to the authorization page
+3. Polls for authorization
+4. Saves the session to `~/.config/trek/config.toml`
+
+#### `trek config`
+
+Manage CLI configuration stored at `~/.config/trek/config.toml`.
+
+Subcommands:
+
+- **`show workspace_dir`** — display the configured workspace path
+- **`show path`** — display the config file location
+- **`set workspace_dir <path>`** — set the workspace directory (must exist)
+
+#### `trek scripts list`
+
+Scans the configured workspace directory for `fxmanifest.lua` files,
+parses them, and prints a formatted list of scripts with metadata.
+
+#### No subcommand (default)
+
+Starts the HTTP dashboard server and opens it in your browser.
+
+- Serves the React frontend (embedded in release builds; proxies
+  Vite dev server at `localhost:5173` in debug builds)
+- Provides a REST API at `/api/*` for scripts, config, themes, and releases
+- Proxies `/external/api/*` to `http://localhost:3000/api/*`
+  (configurable via `BASE_URL` env var or `.env`)
+- Protected by a PIN displayed on startup
+
+### Configuration
+
+The config file lives at:
+
+| OS | Path |
+| -- | ---- |
+| Linux | `$XDG_CONFIG_HOME/trek/config.toml` or `~/.config/trek/config.toml` |
+| Windows | `%APPDATA%/trek/config.toml` |
+
+Example config:
+
+```toml
+workspace_dir = "/home/user/projects/my-server"
+allowed_ips = ["127.0.0.1", "::1", "localhost"]
+```
+
+### Environment Variables
+
+| Variable | Description |
+| -------- | ----------- |
+| `BASE_URL` | Upstream API base URL for external proxy (default: `http://localhost:3000`) |
+| `BROWSER` | Browser command for opening URLs (Unix convention) |
+| `TREK_PACKAGE_MANAGER` | Override detected package manager (for update messages) |
+
+### Dashboard API Endpoints
+
+| Method | Path | Description |
+| ------ | ---- | ----------- |
+| `GET` | `/api/health` | Health check |
+| `GET` | `/api/auth` | Authentication status |
+| `POST` | `/api/check-pin` | Validate dashboard PIN |
+| `GET` | `/api/scripts` | List all scripts |
+| `GET` | `/api/scripts/:name` | Get script details |
+| `GET` | `/api/scripts/:name/config-schema` | Get config schema |
+| `GET/POST` | `/api/scripts/:name/config` | Read/write script config |
+| `GET/POST` | `/api/scripts/:name/theme` | Read/write theme |
+| `GET` | `/api/scripts/:name/theme-schema` | Get theme schema |
+| `GET/POST/DELETE` | `/api/allowed-ips` | Manage allowed IPs |
+| `GET` | `/api/releases` | Current release info |
+| `*` | `/external/api/*path` | Proxy to upstream API |
+
+When running with the `swagger` feature (debug builds), the Swagger UI
+is available at `/swagger-ui`.

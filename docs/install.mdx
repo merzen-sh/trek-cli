@@ -1,0 +1,57 @@
+---
+title: Installation
+description: How to install Trek CLI
+---
+
+## npm (cross-platform)
+
+```shell
+npm i -g @trek-cli/trek
+```
+
+Also available via pnpm, yarn, or bun:
+
+```shell
+pnpm add -g @trek-cli/trek
+yarn global add @trek-cli/trek
+bun i -g @trek-cli/trek
+```
+
+The npm package downloads the correct platform binary (Linux x64 or
+Windows x64) at install time.
+
+## Shell script (Linux)
+
+```shell
+curl -fsSL https://raw.githubusercontent.com/merzen-sh/trek-cli/main/install.sh | bash
+```
+
+Options:
+
+| Flag | Description |
+| ---- | ----------- |
+| `-v, --version <ver>` | Install a specific version (e.g. `0.5.0`) |
+| `-c, --canary` | Install the latest pre-release |
+| `-d, --dir <path>` | Install directory (default: `$HOME/trek/bin`) |
+
+The script detects your OS and architecture, downloads the matching
+tarball from GitHub, verifies the SHA-256 checksum, and adds the
+binary to your `PATH` via shell config (`~/.bashrc`, `~/.zshrc`, or
+`~/.config/fish/config.fish`).
+
+## From source
+
+Requires Rust (see `rust-toolchain.toml` for the pinned version).
+
+```shell
+git clone https://github.com/merzen-sh/trek-cli.git
+cd trek-cli
+cargo build -p trek --release
+# binary at target/release/trek
+```
+
+For the dashboard with Swagger UI:
+
+```shell
+cargo build -p trek --release --features swagger
+```
