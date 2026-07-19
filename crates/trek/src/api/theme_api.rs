@@ -50,9 +50,9 @@ pub async fn get_theme_schema(Path(name): Path<String>) -> Response {
         Ok(d) => d,
         Err(r) => return r,
     };
-    let path = dir.join("schema/theme_schema.json");
+    let path = dir.join("schema/theme.json");
     if !path.is_file() {
-        return (StatusCode::NOT_FOUND, "theme_schema.json not found").into_response();
+        return (StatusCode::NOT_FOUND, "theme.json not found").into_response();
     }
     let content = match std::fs::read_to_string(&path) {
         Ok(c) => c,

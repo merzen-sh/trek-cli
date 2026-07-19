@@ -20,15 +20,15 @@ fn default_config_type() -> String {
 
 fn config_filename(config_type: &str) -> &'static str {
     match config_type {
-        "client" => "config_client.json",
-        _ => "config_server.json",
+        "client" => "client.json",
+        _ => "server.json",
     }
 }
 
 fn schema_filename(config_type: &str) -> &'static str {
     match config_type {
-        "client" => "config_client_schema.json",
-        _ => "config_server_schema.json",
+        "client" => "client.json",
+        _ => "server.json",
     }
 }
 

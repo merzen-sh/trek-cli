@@ -1,8 +1,8 @@
 import { client } from "~/lib/api";
 
 const schemaRefs: Record<string, string> = {
-  server: "../schema/config_server_schema.json",
-  client: "../schema/config_client_schema.json",
+  server: "../schema/server.json",
+  client: "../schema/client.json",
 };
 
 export async function saveConfig(
