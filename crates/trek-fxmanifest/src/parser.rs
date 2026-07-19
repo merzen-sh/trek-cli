@@ -26,6 +26,10 @@ pub enum ParseError {
         line: usize,
         col: usize,
     },
+    ExpectedCloseParen {
+        line: usize,
+        col: usize,
+    },
     DuplicateFxVersion {
         line: usize,
         col: usize,
@@ -52,6 +56,9 @@ impl std::fmt::Display for ParseError {
             }
             Self::ExpectedCloseBrace { line, col } => {
                 write!(f, "expected '}}' at {line}:{col}")
+            }
+            Self::ExpectedCloseParen { line, col } => {
+                write!(f, "expected ')' at {line}:{col}")
             }
             Self::DuplicateFxVersion { line, col } => {
                 write!(f, "duplicate fx_version at {line}:{col}")
@@ -153,6 +160,28 @@ impl<'a> Parser<'a> {
         }
     }
 
+    fn maybe_open_paren(&mut self) -> Result<bool, ParseError> {
+        if matches!(self.peek()?, Token::OpenParen) {
+            self.bump()?;
+            self.skip_newlines()?;
+            Ok(true)
+        } else {
+            Ok(false)
+        }
+    }
+
+    fn maybe_close_paren(&mut self, opened: bool) -> Result<(), ParseError> {
+        if opened {
+            self.skip_newlines()?;
+            match self.bump()? {
+                Token::CloseParen => Ok(()),
+                _ => Err(ParseError::ExpectedCloseParen { line: 0, col: 0 }),
+            }
+        } else {
+            Ok(())
+        }
+    }
+
     pub fn parse(&mut self) -> Result<Manifest, ParseError> {
         let mut fx_version = String::new();
         let mut games = Vec::new();
@@ -178,10 +207,13 @@ impl<'a> Parser<'a> {
                     if !fx_version.is_empty() {
                         return Err(ParseError::DuplicateFxVersion { line: 0, col: 0 });
                     }
+                    let paren = self.maybe_open_paren()?;
                     fx_version = self.expect_string("fx_version")?;
+                    self.maybe_close_paren(paren)?;
                 }
 
                 "game" => {
+                    let paren = self.maybe_open_paren()?;
                     let val = self.expect_string("game")?;
                     let game = match val.to_lowercase().as_str() {
                         "gta5" => Game::Gta5,
@@ -189,22 +221,30 @@ impl<'a> Parser<'a> {
                         _ => Game::Other(val),
                     };
                     games.push(game);
+                    self.maybe_close_paren(paren)?;
                 }
 
                 "client_script" => {
+                    let paren = self.maybe_open_paren()?;
                     let val = self.expect_string("client_script")?;
                     fields.push(Field::ClientScript(val));
+                    self.maybe_close_paren(paren)?;
                 }
                 "server_script" => {
+                    let paren = self.maybe_open_paren()?;
                     let val = self.expect_string("server_script")?;
                     fields.push(Field::ServerScript(val));
+                    self.maybe_close_paren(paren)?;
                 }
                 "shared_script" => {
+                    let paren = self.maybe_open_paren()?;
                     let val = self.expect_string("shared_script")?;
                     fields.push(Field::SharedScript(val));
+                    self.maybe_close_paren(paren)?;
                 }
 
                 "client_scripts" => {
+                    let paren = self.maybe_open_paren()?;
                     if matches!(self.peek()?, Token::OpenBrace) {
                         self.bump()?;
                         fields.push(Field::ClientScripts(self.parse_array()?));
@@ -212,8 +252,10 @@ impl<'a> Parser<'a> {
                         let val = self.expect_string("client_scripts")?;
                         fields.push(Field::ClientScripts(vec![val]));
                     }
+                    self.maybe_close_paren(paren)?;
                 }
                 "server_scripts" => {
+                    let paren = self.maybe_open_paren()?;
                     if matches!(self.peek()?, Token::OpenBrace) {
                         self.bump()?;
                         fields.push(Field::ServerScripts(self.parse_array()?));
@@ -221,8 +263,10 @@ impl<'a> Parser<'a> {
                         let val = self.expect_string("server_scripts")?;
                         fields.push(Field::ServerScripts(vec![val]));
                     }
+                    self.maybe_close_paren(paren)?;
                 }
                 "shared_scripts" => {
+                    let paren = self.maybe_open_paren()?;
                     if matches!(self.peek()?, Token::OpenBrace) {
                         self.bump()?;
                         fields.push(Field::SharedScripts(self.parse_array()?));
@@ -230,9 +274,11 @@ impl<'a> Parser<'a> {
                         let val = self.expect_string("shared_scripts")?;
                         fields.push(Field::SharedScripts(vec![val]));
                     }
+                    self.maybe_close_paren(paren)?;
                 }
 
                 "files" => {
+                    let paren = self.maybe_open_paren()?;
                     if matches!(self.peek()?, Token::OpenBrace) {
                         self.bump()?;
                         fields.push(Field::Files(self.parse_array()?));
@@ -240,15 +286,20 @@ impl<'a> Parser<'a> {
                         let val = self.expect_string("files")?;
                         fields.push(Field::Files(vec![val]));
                     }
+                    self.maybe_close_paren(paren)?;
                 }
 
                 "ui_page" => {
+                    let paren = self.maybe_open_paren()?;
                     let val = self.expect_string("ui_page")?;
                     fields.push(Field::UiPage(val));
+                    self.maybe_close_paren(paren)?;
                 }
                 "ui_page_cdn" => {
+                    let paren = self.maybe_open_paren()?;
                     let val = self.expect_string("ui_page_cdn")?;
                     fields.push(Field::UiPageCdn(val));
+                    self.maybe_close_paren(paren)?;
                 }
 
                 "data_file" => {
@@ -258,39 +309,55 @@ impl<'a> Parser<'a> {
                 }
 
                 "author" => {
+                    let paren = self.maybe_open_paren()?;
                     let val = self.expect_string("author")?;
                     fields.push(Field::Author(val));
+                    self.maybe_close_paren(paren)?;
                 }
                 "description" => {
+                    let paren = self.maybe_open_paren()?;
                     let val = self.expect_string("description")?;
                     fields.push(Field::Description(val));
+                    self.maybe_close_paren(paren)?;
                 }
                 "version" => {
+                    let paren = self.maybe_open_paren()?;
                     let val = self.expect_string("version")?;
                     fields.push(Field::Version(val));
+                    self.maybe_close_paren(paren)?;
                 }
 
                 "this_is_a_map" => {
+                    let paren = self.maybe_open_paren()?;
                     let val = self.expect_string("this_is_a_map")?;
                     let b = matches!(val.to_lowercase().as_str(), "yes" | "true" | "1");
                     fields.push(Field::ThisIsAMap(b));
+                    self.maybe_close_paren(paren)?;
                 }
 
                 "lua54" => {
+                    let paren = self.maybe_open_paren()?;
                     let val = self.expect_string("lua54")?;
                     fields.push(Field::Lua54(val));
+                    self.maybe_close_paren(paren)?;
                 }
                 "dependency" => {
+                    let paren = self.maybe_open_paren()?;
                     let val = self.expect_string("dependency")?;
                     fields.push(Field::Dependency(val));
+                    self.maybe_close_paren(paren)?;
                 }
                 "provide" => {
+                    let paren = self.maybe_open_paren()?;
                     let val = self.expect_string("provide")?;
                     fields.push(Field::Provide(val));
+                    self.maybe_close_paren(paren)?;
                 }
 
                 _ => {
+                    let paren = self.maybe_open_paren()?;
                     let value = self.parse_field_value()?;
+                    self.maybe_close_paren(paren)?;
                     fields.push(Field::Custom { key: id, value });
                 }
             }

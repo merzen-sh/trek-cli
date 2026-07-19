@@ -202,3 +202,211 @@ fn parse_with_double_quotes_and_crlf() {
     assert_eq!(manifest.fx_version, "cerulean");
     assert_eq!(manifest.games.len(), 1);
 }
+
+#[test]
+fn parse_function_call_syntax_single_values() {
+    let input = r#"
+fx_version("cerulean")
+game("gta5")
+version("0.1.0")
+author("merzen-sh")
+description("Trek Core System")
+"#;
+    let manifest = trek_fxmanifest::parse(input).unwrap();
+    assert_eq!(manifest.fx_version, "cerulean");
+    assert_eq!(manifest.games.len(), 1);
+    assert!(matches!(manifest.games[0], trek_fxmanifest::ast::Game::Gta5));
+
+    let mut has_version = false;
+    let mut has_author = false;
+    let mut has_description = false;
+    for field in &manifest.fields {
+        match field {
+            trek_fxmanifest::ast::Field::Version(v) => {
+                assert_eq!(v, "0.1.0");
+                has_version = true;
+            }
+            trek_fxmanifest::ast::Field::Author(a) => {
+                assert_eq!(a, "merzen-sh");
+                has_author = true;
+            }
+            trek_fxmanifest::ast::Field::Description(d) => {
+                assert_eq!(d, "Trek Core System");
+                has_description = true;
+            }
+            _ => {}
+        }
+    }
+    assert!(has_version);
+    assert!(has_author);
+    assert!(has_description);
+}
+
+#[test]
+fn parse_function_call_syntax_arrays() {
+    let input = r#"
+fx_version("cerulean")
+game("gta5")
+server_scripts({
+    "src/server/utils.lua",
+    "src/server/license.lua",
+    "src/server/main.lua",
+})
+client_scripts({
+    "src/client/main.lua",
+})
+"#;
+    let manifest = trek_fxmanifest::parse(input).unwrap();
+    assert_eq!(manifest.fx_version, "cerulean");
+    assert_eq!(manifest.games.len(), 1);
+    assert!(matches!(manifest.games[0], trek_fxmanifest::ast::Game::Gta5));
+
+    let mut server_scripts = Vec::new();
+    let mut client_scripts = Vec::new();
+    for field in &manifest.fields {
+        match field {
+            trek_fxmanifest::ast::Field::ServerScripts(s) => {
+                server_scripts.extend(s.iter().cloned());
+            }
+            trek_fxmanifest::ast::Field::ClientScripts(s) => {
+                client_scripts.extend(s.iter().cloned());
+            }
+            _ => {}
+        }
+    }
+    assert_eq!(
+        server_scripts,
+        vec![
+            "src/server/utils.lua",
+            "src/server/license.lua",
+            "src/server/main.lua",
+        ]
+    );
+    assert_eq!(client_scripts, vec!["src/client/main.lua",]);
+}
+
+#[test]
+fn parse_function_call_syntax_single_quotes() {
+    let input = r#"
+fx_version('cerulean')
+game('gta5')
+author('john doe')
+"#;
+    let manifest = trek_fxmanifest::parse(input).unwrap();
+    assert_eq!(manifest.fx_version, "cerulean");
+    assert_eq!(manifest.games.len(), 1);
+    let author = manifest.fields.iter().find_map(|f| {
+        if let trek_fxmanifest::ast::Field::Author(a) = f {
+            Some(a.as_str())
+        } else {
+            None
+        }
+    });
+    assert_eq!(author, Some("john doe"));
+}
+
+#[test]
+fn parse_function_call_syntax_arrays_single_quotes() {
+    let input = r#"
+fx_version 'cerulean'
+game 'gta5'
+files({
+    'stream/vehicle1.yft',
+    'stream/vehicle1.ytd',
+})
+"#;
+    let manifest = trek_fxmanifest::parse(input).unwrap();
+    assert_eq!(manifest.fx_version, "cerulean");
+    assert_eq!(manifest.games.len(), 1);
+    let files = manifest.fields.iter().find_map(|f| {
+        if let trek_fxmanifest::ast::Field::Files(files) = f {
+            Some(files.clone())
+        } else {
+            None
+        }
+    });
+    assert_eq!(
+        files,
+        Some(vec!["stream/vehicle1.yft".into(), "stream/vehicle1.ytd".into()])
+    );
+}
+
+#[test]
+fn parse_function_call_syntax_mixed_styles() {
+    let input = r#"
+fx_version 'cerulean'
+game("gta5")
+author("john")
+description 'mixed style'
+client_scripts {
+    "client.lua",
+}
+server_scripts({
+    'server.lua',
+})
+"#;
+    let manifest = trek_fxmanifest::parse(input).unwrap();
+    assert_eq!(manifest.fx_version, "cerulean");
+    assert_eq!(manifest.games.len(), 1);
+
+    let mut author = None;
+    let mut description = None;
+    for field in &manifest.fields {
+        match field {
+            trek_fxmanifest::ast::Field::Author(a) => author = Some(a.as_str()),
+            trek_fxmanifest::ast::Field::Description(d) => description = Some(d.as_str()),
+            _ => {}
+        }
+    }
+    assert_eq!(author, Some("john"));
+    assert_eq!(description, Some("mixed style"));
+}
+
+#[test]
+fn parse_function_call_syntax_whitespace_in_parens() {
+    let input = "fx_version(\n  'cerulean'\n)\ngame(\n  \"gta5\"\n)";
+    let manifest = trek_fxmanifest::parse(input).unwrap();
+    assert_eq!(manifest.fx_version, "cerulean");
+    assert_eq!(manifest.games.len(), 1);
+}
+
+#[test]
+fn parse_function_call_syntax_empty_array() {
+    let input = "fx_version('cerulean')\ngame('gta5')\nfiles({})";
+    let manifest = trek_fxmanifest::parse(input).unwrap();
+    assert_eq!(manifest.fx_version, "cerulean");
+    assert_eq!(manifest.games.len(), 1);
+    let files = manifest.fields.iter().find_map(|f| {
+        if let trek_fxmanifest::ast::Field::Files(files) = f {
+            Some(files.clone())
+        } else {
+            None
+        }
+    });
+    assert_eq!(files, Some(vec![]));
+}
+
+#[test]
+fn parse_function_call_syntax_custom_field() {
+    let input = r#"
+fx_version("cerulean")
+game("gta5")
+my_custom_key("custom_value")
+"#;
+    let manifest = trek_fxmanifest::parse(input).unwrap();
+    let custom = manifest.fields.iter().find(
+        |f| matches!(f, trek_fxmanifest::ast::Field::Custom { key, .. } if key == "my_custom_key"),
+    );
+    assert!(custom.is_some());
+    if let Some(trek_fxmanifest::ast::Field::Custom { value, .. }) = custom {
+        assert!(matches!(value, trek_fxmanifest::ast::Value::String(s) if s == "custom_value"));
+    }
+}
+
+#[test]
+fn parse_error_on_unclosed_paren() {
+    let input = "fx_version('cerulean'";
+    let err = trek_fxmanifest::parse(input).unwrap_err();
+    let msg = err.to_string();
+    assert!(msg.contains("expected ')'"), "got: {msg}");
+}

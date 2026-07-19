@@ -4,6 +4,8 @@ use crate::source::Source;
 pub enum Token {
     Identifier(String),
     StringLiteral(String),
+    OpenParen,
+    CloseParen,
     OpenBrace,
     CloseBrace,
     Comma,
@@ -136,6 +138,16 @@ impl<'a> Lexer<'a> {
                     self.advance();
                     let s = self.read_string(c)?;
                     return Ok(Token::StringLiteral(s));
+                }
+
+                if c == '(' {
+                    self.advance();
+                    return Ok(Token::OpenParen);
+                }
+
+                if c == ')' {
+                    self.advance();
+                    return Ok(Token::CloseParen);
                 }
 
                 if c == '{' {
